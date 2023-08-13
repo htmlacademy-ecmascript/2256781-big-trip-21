@@ -1,13 +1,12 @@
-import FilterView from '../view/filter.js';
-import SortView from '../view/sort.js';
-import TripInfoView from '../view/info-point.js';
-import AddButtonView from '../view/add-button.js';
-import TripListView from '../view/list-point.js';
-import TripItemView from '../view/point.js';
-import TripEditFormItemView from '../view/edit-form.js';
+import FilterView from '../view/filter-view.js';
+import SortView from '../view/sort-view.js';
+import TripInfoView from '../view/info-point-view.js';
+import AddButtonView from '../view/add-button-view.js';
+import TripListView from '../view/list-point-view.js';
+import TripItemView from '../view/point-view.js';
+import TripEditFormItemView from '../view/edit-form-view.js';
 import {render, RenderPosition} from '../render.js';
-
-const POINTS_COUNT = 3;
+import {POINTS_COUNT} from '../const.js';
 
 const boxFilterElement = document.querySelector('.trip-controls__filters');
 const boxTripEventElement = document.querySelector('.trip-events');
