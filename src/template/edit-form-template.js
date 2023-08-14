@@ -1,4 +1,4 @@
-const getTripEditFormItemTemplate = (data) => (
+const getTripEditFormItemTemplate = () =>
   `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
       <header class="event__header">
@@ -153,7 +153,6 @@ const getTripEditFormItemTemplate = (data) => (
         </section>
       </section>
     </form>
-  </li>`
-);
+  </li>`;
 
-export {getTripEditFormItemTemplate};
+export { getTripEditFormItemTemplate };

@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {getTripItemTemplate} from '../template/point-template.js';
+import { createElement } from '../render.js';
+import { getTripItemTemplate } from '../template/point-template.js';
 
 export default class TripItemView {
   getTemplate() {

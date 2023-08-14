@@ -1,5 +1,3 @@
-const getTripListTemplate = () => (
-  '<ul class="trip-events__list"></ul>'
-);
+const getTripListTemplate = () => '<ul class="trip-events__list"></ul>';
 
-export {getTripListTemplate};
+export { getTripListTemplate };

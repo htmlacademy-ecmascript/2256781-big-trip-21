@@ -1,8 +1,8 @@
-import {createElement} from '../render.js';
-import {getTripEditFormItemTemplate} from '../template/edit-form-template.js';
+import { createElement } from '../render.js';
+import { getTripEditFormItemTemplate } from '../template/edit-form-template.js';
 
 export default class TripEditFormItemView {
-  constructor({data}) {
+  constructor({ data }) {
     this.data = data;
   }
 
