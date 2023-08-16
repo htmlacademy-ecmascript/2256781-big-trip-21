@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {getAddButtonTemplate} from '../template/add-button-template.js';
+import { createElement } from '../render.js';
+import { getAddButtonTemplate } from '../template/add-button-template.js';
 
 export default class AddButtonView {
   getTemplate() {

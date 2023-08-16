@@ -1,4 +1,4 @@
-const getTripInfoTemplate = () => (
+const getTripInfoTemplate = () =>
   `<section class="trip-main__trip-info  trip-info">
     <div class="trip-info__main">
       <h1 class="trip-info__title">Amsterdam — Chamonix — Geneva</h1>
@@ -9,7 +9,6 @@ const getTripInfoTemplate = () => (
     <p class="trip-info__cost">
       Total: €&nbsp;<span class="trip-info__cost-value">1230</span>
     </p>
-  </section>`
-);
+  </section>`;
 
-export {getTripInfoTemplate};
+export { getTripInfoTemplate };

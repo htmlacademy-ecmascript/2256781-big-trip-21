@@ -1,5 +1,5 @@
-import {createElement} from '../render.js';
-import {getEmptyTripListTemplate} from '../template/empty-list-point-template.js';
+import { createElement } from '../render.js';
+import { getEmptyTripListTemplate } from '../template/empty-list-point-template.js';
 
 export default class EmptyTripListView {
   getTemplate() {

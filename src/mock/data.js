@@ -1,198 +1,235 @@
-const POINTS = [{
-  id: 'a293be43-b1f2-49eb-9297-3d1ea13cc306',
-  basePrice: 6684,
-  dateFrom: '2023-08-03T21:00:01.147Z',
-  dateTo: '2023-08-13T01:00:01.147Z',
-  destination: '1793ae00-0950-41e8-8e74-b17970748cd2',
-  isFavorite: true,
-  offers: [],
-  type: 'bus'
-}, {
-  id: '9b2d334c-3783-461d-ba6d-0ada613fbf57',
-  basePrice: 6346,
-  dateFrom: '2023-08-08T21:00:01.147Z',
-  dateTo: '2023-08-13T16:00:01.147Z',
-  destination: 'b0b1e0b5-fdc0-426b-9b51-05ce0cd2d80d',
-  isFavorite: false,
-  offers: [],
-  type: 'sightseeing'
-}, {
-  id: 'ede47450-9301-4564-8220-6303d0753b33',
-  basePrice: 1301,
-  dateFrom: '2023-08-01T21:00:01.147Z',
-  dateTo: '2023-08-12T03:00:01.147Z',
-  destination: '8d05e240-7c07-45f9-8ea5-7cb804543822',
-  isFavorite: true,
-  offers: [
-    '7e83e639-7e78-4ba5-abe3-68f43bd65d08'
-  ],
-  type: 'train'
-}, {
-  id: '5fd17db6-ca9d-46b0-82c3-075716d9c604',
-  basePrice: 9470,
-  dateFrom: '2023-07-31T21:00:01.147Z',
-  dateTo: '2023-08-12T23:00:01.147Z',
-  destination: '1793ae00-0950-41e8-8e74-b17970748cd2',
-  isFavorite: false,
-  offers: [
-    'fcf92685-3cea-4396-862a-653f7290fd35'
-  ],
-  type: 'check-in'
-},{
-  id: 'bc0d23d2-4b94-46bb-ba45-43784f8c8970',
-  basePrice: 6172,
-  dateFrom: '2023-08-07T21:00:01.147Z',
-  dateTo: '2023-08-13T09:00:01.147Z',
-  destination: '370a70e3-5e86-4cf7-8f22-6290b5a6683d',
-  isFavorite: false,
-  offers: [
-    'f6fa292a-7112-49ed-a6bb-bc2dff743ee3'
-  ],
-  type: 'drive'
-},{
-  id: '91d1e0d5-cf98-4391-8ef0-7581f42b80d2',
-  basePrice: 9003,
-  dateFrom: '2023-08-01T21:00:01.147Z',
-  dateTo: '2023-08-12T09:00:01.147Z',
-  destination: '8d05e240-7c07-45f9-8ea5-7cb804543822',
-  isFuavorite: true,
-  offers: [
-    'cc889541-5a52-4e3f-ac53-35a25e4deb47'
-  ],
-  type: 'restaurant'
-}];
+import {
+  getRandomArrayElement,
+  createRandomNumberFromRange,
+} from '../utils.js';
+
+const getPictureNumber = createRandomNumberFromRange(1, 17, true);
+
+const POINTS = [
+  {
+    id: 0,
+    type: 'bus',
+    basePrice: 6684,
+    dateFrom: new Date('2023-08-03:00'),
+    dateTo: new Date('2023-08-13:22:00'),
+    destination: '1793ae00-0950-41e8-8e74-b17970748cd2',
+    isFavorite: true,
+    offers: [1],
+  },
+  {
+    id: 1,
+    type: 'sightseeing',
+    basePrice: 6346,
+    dateFrom: new Date('2023-08-08:08:00'),
+    dateTo: new Date('2023-08-13:21:00'),
+    destination: 'b0b1e0b5-fdc0-426b-9b51-05ce0cd2d80d',
+    isFavorite: false,
+    offers: [],
+  },
+  {
+    id: 2,
+    type: 'train',
+    basePrice: 1301,
+    dateFrom: new Date('2023-08-01:01:00'),
+    dateTo: new Date('2023-08-12:10:15'),
+    destination: '8d05e240-7c07-45f9-8ea5-7cb804543822',
+    isFavorite: true,
+    offers: [1, 3],
+  },
+  {
+    id: 3,
+    type: 'check-in',
+    basePrice: 9470,
+    dateFrom: new Date('2023-07-31:21:00'),
+    dateTo: new Date('2023-08-12:23:00'),
+    destination: '1793ae00-0950-41e8-8e74-b17970748cd2',
+    isFavorite: false,
+    offers: [2],
+  },
+  {
+    id: 4,
+    type: 'drive',
+    basePrice: 6172,
+    dateFrom: new Date('2023-08-07:21:00'),
+    dateTo: new Date('2023-08-13:09:00'),
+    destination: '370a70e3-5e86-4cf7-8f22-6290b5a6683d',
+    isFavorite: false,
+    offers: [1],
+  },
+  {
+    id: 5,
+    type: 'restaurant',
+    basePrice: 9003,
+    dateFrom: new Date('2023-08-01:21:00'),
+    dateTo: new Date('2023-08-12:09:00'),
+    destination: '8d05e240-7c07-45f9-8ea5-7cb804543822',
+    isFuavorite: true,
+    offers: [1],
+  },
+  {
+    id: 6,
+    type: 'taxi',
+    offers: [],
+    destination: 2,
+    basePrice: 500,
+    dateFrom: new Date('2023-08-11:20:35'),
+    dateTo: new Date('2023-08-12:11:25'),
+  },
+  {
+    id: 7,
+    type: 'ship',
+    offers: [1, 3],
+    destination: 2,
+    basePrice: 80,
+    dateFrom: new Date('2023-08-10:22:50'),
+    dateTo: new Date('2023-08-11:22:10'),
+  },
+  {
+    id: 8,
+    type: 'flight',
+    offers: [1, 2, 4],
+    destination: 1,
+    basePrice: 150,
+    dateFrom: new Date('2023-08-10:22:55'),
+    dateTo: new Date('2023-08-11:11:23'),
+  },
+];
 
 const DISTANATIONS = [
   {
-    id: '370a70e3-5e86-4cf7-8f22-6290b5a6683d',
+    id: 1,
     description: 'Amsterdam - middle-eastern paradise',
     name: 'Amsterdam',
     pictures: [
       {
-        src: 'https://21.objects.pages.academy/static/destinations/13.jpg',
-        description: 'Amsterdam middle-eastern paradise'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Amsterdam middle-eastern paradise',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/7.jpg',
-        description: 'Amsterdam a perfect place to stay with a family'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Amsterdam a perfect place to stay with a family',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/14.jpg',
-        description: 'Amsterdam with an embankment of a mighty river as a centre of attraction'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description:
+          'Amsterdam with an embankment of a mighty river as a centre of attraction',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/17.jpg',
-        description: 'Amsterdam with crowded streets'
-      }
-    ]
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Amsterdam with crowded streets',
+      },
+    ],
   },
   {
-    id: 'd5ffda3a-5b4c-4f00-acda-21bcc31daf43',
+    id: 2,
     description: 'Sochi - with a beautiful old town',
     name: 'Sochi',
     pictures: [
       {
-        src: 'https://21.objects.pages.academy/static/destinations/10.jpg',
-        description: 'Sochi for those who value comfort and coziness'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Sochi for those who value comfort and coziness',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/13.jpg',
-        description: 'Sochi is a beautiful city'
-      }
-    ]
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Sochi is a beautiful city',
+      },
+    ],
   },
   {
-    id: '7b7b538a-2711-4dad-9707-576b7303302a',
+    id: 3,
     description: 'Paris - a perfect place to stay with a family',
     name: 'Paris',
     pictures: [
       {
-        src: 'https://21.objects.pages.academy/static/destinations/7.jpg',
-        description: 'Paris full of of cozy canteens where you can try the best coffee in the Middle East'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description:
+          'Paris full of of cozy canteens where you can try the best coffee in the Middle East',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/5.jpg',
-        description: 'Paris a true asian pearl'
-      }
-    ]
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Paris a true asian pearl',
+      },
+    ],
   },
   {
-    id: '8d05e240-7c07-45f9-8ea5-7cb804543822',
+    id: 4,
     description: 'Chamonix - for those who value comfort and coziness',
     name: 'Chamonix',
-    pictures: []
+    pictures: [],
   },
   {
-    id: '9bec9ace-1333-4fef-a789-254aadf2a5b5',
+    id: 5,
     description: 'Rome - in a middle of Europe',
     name: 'Rome',
     pictures: [
       {
-        src: 'https://21.objects.pages.academy/static/destinations/14.jpg',
-        description: 'Rome for those who value comfort and coziness'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Rome for those who value comfort and coziness',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/4.jpg',
-        description: 'Rome a perfect place to stay with a family'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Rome a perfect place to stay with a family',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/16.jpg',
-        description: 'Rome for those who value comfort and coziness'
-      }
-    ]
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Rome for those who value comfort and coziness',
+      },
+    ],
   },
   {
-    id: '2e2a51ed-23ec-4edc-ae0d-ed30da2cec6a',
+    id: 6,
     description: 'Nagasaki - for those who value comfort and coziness',
     name: 'Nagasaki',
     pictures: [
       {
-        src: 'https://21.objects.pages.academy/static/destinations/11.jpg',
-        description: 'Nagasaki a true asian pearl'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Nagasaki a true asian pearl',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/9.jpg',
-        description: 'Nagasaki is a beautiful city'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Nagasaki is a beautiful city',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/16.jpg',
-        description: 'Nagasaki with an embankment of a mighty river as a centre of attraction'
-      }
-    ]
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description:
+          'Nagasaki with an embankment of a mighty river as a centre of attraction',
+      },
+    ],
   },
   {
-    id: 'b0b1e0b5-fdc0-426b-9b51-05ce0cd2d80d',
+    id: 7,
     description: 'Saint Petersburg - a perfect place to stay with a family',
     name: 'Saint Petersburg',
     pictures: [
       {
-        src: 'https://21.objects.pages.academy/static/destinations/14.jpg',
-        description: 'Saint Petersburg a perfect place to stay with a family'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Saint Petersburg a perfect place to stay with a family',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/10.jpg',
-        description: 'Saint Petersburg full of of cozy canteens where you can try the best coffee in the Middle East'
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description:
+          'Saint Petersburg full of of cozy canteens where you can try the best coffee in the Middle East',
       },
       {
-        src: 'https://21.objects.pages.academy/static/destinations/9.jpg',
-        description: 'Saint Petersburg a perfect place to stay with a family'
-      }
-    ]
+        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        description: 'Saint Petersburg a perfect place to stay with a family',
+      },
+    ],
   },
   {
-    id: '23bb1b80-9acf-4c29-8571-175e5aa6fa1a',
+    id: 8,
     description: 'Saint Petersburg - with crowded streets',
     name: 'Saint Petersburg',
-    pictures: []
+    pictures: [],
   },
   {
-    id: '1793ae00-0950-41e8-8e74-b17970748cd2',
-    name: 'Den Haag'
+    id: 9,
+    name: 'Den Haag',
   },
   {
-    id: 'd1d1f56f-40a2-4de5-9dab-4fbdd9e98726',
-    name: 'Naples'
-  }
+    id: 10,
+    name: 'Naples',
+  },
 ];
 
 const OFFERS = [
@@ -200,220 +237,213 @@ const OFFERS = [
     type: 'taxi',
     offers: [
       {
-        id: 'ca78640b-a924-478c-9ccb-35ad88a7184b',
+        id: 1,
         title: 'Upgrade to a business class',
-        price: 165
+        price: 165,
       },
       {
-        id: 'fd5eb512-fe2b-4f64-b53d-9a32d437ad55',
+        id: 2,
         title: 'Choose the radio station',
-        price: 48
+        price: 48,
       },
       {
-        id: '93da5a38-a83b-45d6-aa0b-1a7d6c80933f',
+        id: 3,
         title: 'Choose temperature',
-        price: 55
+        price: 55,
       },
       {
-        id: 'db7f4251-3258-4b92-b56c-68baff7d7681',
-        title: 'Drive quickly, I\'m in a hurry',
-        price: 130
+        id: 4,
+        title: 'Drive quickly, I am in a hurry',
+        price: 130,
       },
       {
-        id: 'aca11991-a0da-4a59-8a0e-fb897c7ff2a2',
+        id: 5,
         title: 'Drive slowly',
-        price: 134
-      }
-    ]
+        price: 134,
+      },
+    ],
   },
   {
     type: 'bus',
     offers: [
       {
-        id: '38d212f9-2925-4038-9a1d-97c4c8fd379f',
+        id: 1,
         title: 'Infotainment system',
-        price: 63
+        price: 63,
       },
       {
-        id: '2fcde6e1-63c6-4c13-abe1-69151768fc52',
+        id: 2,
         title: 'Order meal',
-        price: 67
+        price: 67,
       },
       {
-        id: 'ca47200d-4e9d-4478-a737-d0e1777cb6f2',
+        id: 3,
         title: 'Choose seats',
-        price: 137
-      }
-    ]
+        price: 137,
+      },
+    ],
   },
   {
     type: 'train',
     offers: [
       {
-        id: '2e79ad30-6498-4d6d-8aee-be605afe6916',
+        id: 1,
         title: 'Book a taxi at the arrival point',
-        price: 181
+        price: 181,
       },
       {
-        id: '86e59b7a-5eeb-466f-82f8-24182d272850',
+        id: 2,
         title: 'Order a breakfast',
-        price: 34
+        price: 34,
       },
       {
-        id: '7e83e639-7e78-4ba5-abe3-68f43bd65d08',
+        id: 3,
         title: 'Wake up at a certain time',
-        price: 142
-      }
-    ]
+        price: 142,
+      },
+    ],
   },
   {
     type: 'flight',
     offers: [
       {
-        id: '6b302345-9f18-4d54-8d07-1f3ee2d1f094',
+        id: 1,
         title: 'Choose meal',
-        price: 141
+        price: 141,
       },
       {
-        id: '704b25b8-1846-4fe0-8089-012abb05ace9',
+        id: 2,
         title: 'Choose seats',
-        price: 117
+        price: 117,
       },
       {
-        id: 'ddb34fd5-c1c9-4c13-bf3a-f53872b7927b',
+        id: 3,
         title: 'Upgrade to comfort class',
-        price: 127
+        price: 127,
       },
       {
-        id: '59aa3d3e-d26d-4308-a0f5-b1d64a3b53db',
+        id: 4,
         title: 'Upgrade to business class',
-        price: 123
+        price: 123,
       },
       {
-        id: '43c4cb50-4784-40c7-926f-a9d43506b817',
+        id: 5,
         title: 'Add luggage',
-        price: 85
+        price: 85,
       },
       {
-        id: 'c1cb8c91-0cbb-41ef-ad26-bc9b19dd5401',
+        id: 6,
         title: 'Business lounge',
-        price: 63
-      }
-    ]
+        price: 63,
+      },
+    ],
   },
   {
     type: 'check-in',
     offers: [
       {
-        id: '2fc7f802-2102-41dd-bddd-c2c89f67ff62',
+        id: 1,
         title: 'Choose the time of check-in',
-        price: 172
+        price: 172,
       },
       {
-        id: '14bb0bb4-6acf-48df-99a7-8a0eef5c1e49',
+        id: 2,
         title: 'Choose the time of check-out',
-        price: 55
+        price: 55,
       },
       {
-        id: 'c3946cfc-9eef-45c7-8f9a-958ee49622ae',
+        id: 3,
         title: 'Add breakfast',
-        price: 73
+        price: 73,
       },
       {
-        id: '8b43ab32-7e7b-4226-9893-c02490e4a1cf',
+        id: 4,
         title: 'Laundry',
-        price: 94
+        price: 94,
       },
       {
-        id: 'fcf92685-3cea-4396-862a-653f7290fd35',
+        id: 5,
         title: 'Order a meal from the restaurant',
-        price: 135
-      }
-    ]
+        price: 135,
+      },
+    ],
   },
   {
     type: 'sightseeing',
-    offers: []
+    offers: [],
   },
   {
     type: 'ship',
     offers: [
       {
-        id: '655ddbbb-f8c6-4354-8eff-3a7899de0967',
+        id: 1,
         title: 'Choose meal',
-        price: 84
+        price: 84,
       },
       {
-        id: 'cd70479a-da15-4d9a-8efe-503b653ca2a4',
+        id: 2,
         title: 'Choose seats',
-        price: 65
+        price: 65,
       },
       {
-        id: '7f65f6bd-1b24-4d41-a66d-2fe2b077f2bb',
+        id: 3,
         title: 'Upgrade to comfort class',
-        price: 108
+        price: 108,
       },
       {
-        id: '99092e49-39f0-4c21-baa5-f2ec7ae71c08',
+        id: 4,
         title: 'Upgrade to business class',
-        price: 68
+        price: 68,
       },
       {
-        id: '9ca23c7e-ab16-4cde-8dda-fb67c2b71eed',
+        id: 5,
         title: 'Add luggage',
-        price: 129
+        price: 129,
       },
       {
-        id: 'acf7019b-ca90-48f5-be16-6339f3436003',
+        id: 6,
         title: 'Business lounge',
-        price: 52
-      }
-    ]
+        price: 52,
+      },
+    ],
   },
   {
     type: 'drive',
     offers: [
       {
-        id: '062b5d3d-3a82-4c0a-b193-71c0c2ef6b7d',
+        id: 1,
         title: 'With automatic transmission',
-        price: 119
+        price: 119,
       },
       {
-        id: 'f6fa292a-7112-49ed-a6bb-bc2dff743ee3',
+        id: 2,
         title: 'With air conditioning',
-        price: 64
-      }
-    ]
+        price: 64,
+      },
+    ],
   },
   {
     type: 'restaurant',
     offers: [
       {
-        id: '08a2d6b7-bdc5-49ab-90e9-6e549b85b1b8',
+        id: 1,
         title: 'Choose live music',
-        price: 59
+        price: 59,
       },
       {
-        id: 'cc889541-5a52-4e3f-ac53-35a25e4deb47',
+        id: 2,
         title: 'Choose VIP area',
-        price: 50
-      }
-    ]
-  }
+        price: 50,
+      },
+    ],
+  },
 ];
 
-const PointType = {
-  TAXI: 'Taxi',
-  BUS: 'Bus',
-  TRAIN: 'Train',
-  SHIP: 'Ship',
-  DRIVE: 'Drive',
-  FLIGHT:'Flight',
-  CHECKIN: 'Check-in',
-  SIGHTSEEING: 'Sightseeing',
-  RESTAURANT: 'Restaurant',
-};
+const getData = (type = 'empty') =>
+  type === 'empty'
+    ? 'Click New Event to create your first point'
+    : { POINTS, DISTANATIONS, OFFERS };
 
-const getData = (type = 'empty') => type === 'empty' ? 'Click New Event to create your first point' : {POINTS, DISTANATIONS, OFFERS, PointType};
+const getRandomPoint = () => getRandomArrayElement(POINTS);
 
-export {getData};
+export { getData, getRandomPoint };
