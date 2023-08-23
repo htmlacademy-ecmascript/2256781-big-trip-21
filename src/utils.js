@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 const getRandomInteger = (a, b) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -43,4 +45,15 @@ const createRandomNumberFromRange = (
   };
 };
 
-export { createRandomNumberFromRange, getRandomArrayElement };
+const humanizeDiffDate = (fromDate, toDate) =>
+  dayjs(toDate).diff(dayjs(fromDate), 'h');
+
+const humanizeDate = (date, typeFormating) =>
+  date ? dayjs(date).format(typeFormating) : '';
+
+export {
+  createRandomNumberFromRange,
+  getRandomArrayElement,
+  humanizeDate,
+  humanizeDiffDate,
+};
