@@ -1,121 +1,38 @@
-import {
-  getRandomArrayElement,
-  createRandomNumberFromRange,
-} from '../utils.js';
+import { getDate, createRandomNumberFromRange } from '../utils.js';
+import { Price, typePoints } from '../const.js';
 
-const getPictureNumber = createRandomNumberFromRange(1, 17, true);
+const pictureNumberGenerator = createRandomNumberFromRange(1, 17, true);
+const priceGenerator = createRandomNumberFromRange(Price.MIN, Price.MAX, false);
+const destinationIdGenerator = createRandomNumberFromRange(1, 10, false);
+const favoriteFlagGenerator = createRandomNumberFromRange(0, 1, false);
+const typePointGenerator = createRandomNumberFromRange(
+  0,
+  typePoints.length - 1,
+  false
+);
+const offerFlagGenerator = createRandomNumberFromRange(0, 1, false);
 
-const POINTS = [
-  {
-    id: 0,
-    type: 'bus',
-    basePrice: 6684,
-    dateFrom: new Date('2023-08-03:00'),
-    dateTo: new Date('2023-08-13:22:00'),
-    destination: '1793ae00-0950-41e8-8e74-b17970748cd2',
-    isFavorite: true,
-    offers: [1],
-  },
-  {
-    id: 1,
-    type: 'sightseeing',
-    basePrice: 6346,
-    dateFrom: new Date('2023-08-08:08:00'),
-    dateTo: new Date('2023-08-13:21:00'),
-    destination: 'b0b1e0b5-fdc0-426b-9b51-05ce0cd2d80d',
-    isFavorite: false,
-    offers: [],
-  },
-  {
-    id: 2,
-    type: 'train',
-    basePrice: 1301,
-    dateFrom: new Date('2023-08-01:01:00'),
-    dateTo: new Date('2023-08-12:10:15'),
-    destination: '8d05e240-7c07-45f9-8ea5-7cb804543822',
-    isFavorite: true,
-    offers: [1, 3],
-  },
-  {
-    id: 3,
-    type: 'check-in',
-    basePrice: 9470,
-    dateFrom: new Date('2023-07-31:21:00'),
-    dateTo: new Date('2023-08-12:23:00'),
-    destination: '1793ae00-0950-41e8-8e74-b17970748cd2',
-    isFavorite: false,
-    offers: [2],
-  },
-  {
-    id: 4,
-    type: 'drive',
-    basePrice: 6172,
-    dateFrom: new Date('2023-08-07:21:00'),
-    dateTo: new Date('2023-08-13:09:00'),
-    destination: '370a70e3-5e86-4cf7-8f22-6290b5a6683d',
-    isFavorite: false,
-    offers: [1],
-  },
-  {
-    id: 5,
-    type: 'restaurant',
-    basePrice: 9003,
-    dateFrom: new Date('2023-08-01:21:00'),
-    dateTo: new Date('2023-08-12:09:00'),
-    destination: '8d05e240-7c07-45f9-8ea5-7cb804543822',
-    isFuavorite: true,
-    offers: [1],
-  },
-  {
-    id: 6,
-    type: 'taxi',
-    offers: [],
-    destination: 2,
-    basePrice: 500,
-    dateFrom: new Date('2023-08-11:20:35'),
-    dateTo: new Date('2023-08-12:11:25'),
-  },
-  {
-    id: 7,
-    type: 'ship',
-    offers: [1, 3],
-    destination: 2,
-    basePrice: 80,
-    dateFrom: new Date('2023-08-10:22:50'),
-    dateTo: new Date('2023-08-11:22:10'),
-  },
-  {
-    id: 8,
-    type: 'flight',
-    offers: [1, 2, 4],
-    destination: 1,
-    basePrice: 150,
-    dateFrom: new Date('2023-08-10:22:55'),
-    dateTo: new Date('2023-08-11:11:23'),
-  },
-];
-
-const DISTANATIONS = [
+const DESTINATIONS = [
   {
     id: 1,
     description: 'Amsterdam - middle-eastern paradise',
     name: 'Amsterdam',
     pictures: [
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Amsterdam middle-eastern paradise',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Amsterdam a perfect place to stay with a family',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description:
           'Amsterdam with an embankment of a mighty river as a centre of attraction',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Amsterdam with crowded streets',
       },
     ],
@@ -126,11 +43,11 @@ const DISTANATIONS = [
     name: 'Sochi',
     pictures: [
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Sochi for those who value comfort and coziness',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Sochi is a beautiful city',
       },
     ],
@@ -141,12 +58,12 @@ const DISTANATIONS = [
     name: 'Paris',
     pictures: [
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description:
           'Paris full of of cozy canteens where you can try the best coffee in the Middle East',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Paris a true asian pearl',
       },
     ],
@@ -163,15 +80,15 @@ const DISTANATIONS = [
     name: 'Rome',
     pictures: [
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Rome for those who value comfort and coziness',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Rome a perfect place to stay with a family',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Rome for those who value comfort and coziness',
       },
     ],
@@ -182,15 +99,15 @@ const DISTANATIONS = [
     name: 'Nagasaki',
     pictures: [
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Nagasaki a true asian pearl',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Nagasaki is a beautiful city',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description:
           'Nagasaki with an embankment of a mighty river as a centre of attraction',
       },
@@ -202,16 +119,16 @@ const DISTANATIONS = [
     name: 'Saint Petersburg',
     pictures: [
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Saint Petersburg a perfect place to stay with a family',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description:
           'Saint Petersburg full of of cozy canteens where you can try the best coffee in the Middle East',
       },
       {
-        src: `https://21.objects.pages.academy/static/destinations/${getPictureNumber()}.jpg`,
+        src: `https://21.objects.pages.academy/static/destinations/${pictureNumberGenerator()}.jpg`,
         description: 'Saint Petersburg a perfect place to stay with a family',
       },
     ],
@@ -439,11 +356,26 @@ const OFFERS = [
   },
 ];
 
-const getData = (type = 'empty') =>
-  type === 'empty'
-    ? 'Click New Event to create your first point'
-    : { POINTS, DISTANATIONS, OFFERS };
+function getOffersByType(type) {
+  return OFFERS.find((offer) => offer.type === type).offers.map(({ id }) => id);
+}
 
-const getRandomPoint = () => getRandomArrayElement(POINTS);
+function generatePoint() {
+  const type = typePoints[typePointGenerator()];
+  const destination = destinationIdGenerator();
+  const isFavorite = !!favoriteFlagGenerator();
+  const hasOffers = !!offerFlagGenerator();
 
-export { getData, getRandomPoint };
+  return {
+    id: crypto.randomUUID(),
+    basePrice: priceGenerator(),
+    dateFrom: getDate({ next: false }),
+    dateTo: getDate({ next: true }),
+    destination,
+    isFavorite,
+    offers: hasOffers ? getOffersByType(type) : [],
+    type,
+  };
+}
+
+export { generatePoint, DESTINATIONS, OFFERS };
