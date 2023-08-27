@@ -1,21 +1,16 @@
 const POINT_COUNT = 3;
 const PICTURE_COUNT = 8;
 
-const Price = {
-  MIN: 1,
-  MAX: 2000,
-};
-
-const typePoints = [
-  'Taxi',
-  'Bus',
-  'Train',
-  'Ship',
-  'Drive',
-  'Flight',
-  'Check-in',
-  'Sightseeing',
-  'Restaurant',
+const TYPE_POINTS = [
+  'taxi',
+  'bus',
+  'train',
+  'ship',
+  'drive',
+  'flight',
+  'check-in',
+  'sightseeing',
+  'restaurant',
 ];
 
 const DATE_FORMAT = 'MM DD';
@@ -30,6 +25,5 @@ export {
   DATE_FORMAT,
   TIME_FORMAT,
   FULL_DATE_FORMAT,
-  Price,
-  typePoints,
+  TYPE_POINTS,
 };

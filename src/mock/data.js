@@ -1,5 +1,10 @@
 import { getDate, createRandomNumberFromRange } from '../utils.js';
-import { Price, typePoints } from '../const.js';
+import { TYPE_POINTS } from '../const.js';
+
+const Price = {
+  MIN: 1,
+  MAX: 2000,
+};
 
 const pictureNumberGenerator = createRandomNumberFromRange(1, 17, true);
 const priceGenerator = createRandomNumberFromRange(Price.MIN, Price.MAX, false);
@@ -7,10 +12,9 @@ const destinationIdGenerator = createRandomNumberFromRange(1, 10, false);
 const favoriteFlagGenerator = createRandomNumberFromRange(0, 1, false);
 const typePointGenerator = createRandomNumberFromRange(
   0,
-  typePoints.length - 1,
+  TYPE_POINTS.length - 1,
   false
 );
-const offerFlagGenerator = createRandomNumberFromRange(0, 1, false);
 
 const DESTINATIONS = [
   {
@@ -357,14 +361,17 @@ const OFFERS = [
 ];
 
 function getOffersByType(type) {
-  return OFFERS.find((offer) => offer.type === type).offers.map(({ id }) => id);
+  const offerByType = OFFERS.find((offer) => offer.type === type);
+
+  return offerByType?.offers
+    ? offerByType.offers.map(({ id }) => id)
+    : offerByType;
 }
 
 function generatePoint() {
-  const type = typePoints[typePointGenerator()];
+  const type = TYPE_POINTS[typePointGenerator()];
   const destination = destinationIdGenerator();
   const isFavorite = !!favoriteFlagGenerator();
-  const hasOffers = !!offerFlagGenerator();
 
   return {
     id: crypto.randomUUID(),
@@ -373,7 +380,7 @@ function generatePoint() {
     dateTo: getDate({ next: true }),
     destination,
     isFavorite,
-    offers: hasOffers ? getOffersByType(type) : [],
+    offers: getOffersByType(type) ?? [],
     type,
   };
 }
