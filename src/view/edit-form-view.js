@@ -2,12 +2,18 @@ import { createElement } from '../render.js';
 import { getTripEditFormItemTemplate } from '../template/edit-form-template.js';
 
 export default class TripEditFormItemView {
-  constructor({ data }) {
-    this.data = data;
+  constructor({ point, destination, offersByType }) {
+    this.point = point;
+    this.destination = destination;
+    this.offersByType = offersByType;
   }
 
   getTemplate() {
-    return getTripEditFormItemTemplate(this.data);
+    return getTripEditFormItemTemplate({
+      point: this.point,
+      destination: this.destination,
+      offersByType: this.offersByType,
+    });
   }
 
   getElement() {

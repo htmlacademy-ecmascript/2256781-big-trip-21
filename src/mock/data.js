@@ -368,6 +368,33 @@ function getOffersByType(type) {
     : offerByType;
 }
 
+function getRandomOffersByType(type) {
+  const offersByType = getOffersByType(type);
+  const randomOffers = [];
+
+  if (!offersByType || offersByType.length === 0) {
+    return null;
+  }
+
+  const randomNumber = createRandomNumberFromRange(
+    1,
+    offersByType.length - 1,
+    false
+  )();
+
+  const randomOfferGenerator = createRandomNumberFromRange(
+    0,
+    offersByType.length - 1,
+    true
+  );
+
+  for (let i = 1; i <= randomNumber; i++) {
+    randomOffers.push(offersByType[randomOfferGenerator()]);
+  }
+
+  return randomOffers;
+}
+
 function generatePoint() {
   const type = TYPE_POINTS[typePointGenerator()];
   const destination = destinationIdGenerator();
@@ -380,7 +407,7 @@ function generatePoint() {
     dateTo: getDate({ next: true }),
     destination,
     isFavorite,
-    offers: getOffersByType(type) ?? [],
+    offers: getRandomOffersByType(type) ?? [],
     type,
   };
 }
