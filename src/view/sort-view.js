@@ -1,19 +1,16 @@
 import { createElement } from '../render.js';
+import { getSortTemplate } from '../template/sort-template.js';
 
-const createEmptyTripListTemplate = () => (
-  '<p class="trip-events__msg">Click New Event to create your first point</p>'
-);
-
-export default class EmptyTripListView {
+export default class SortView {
   getTemplate() {
-    return createEmptyTripListTemplate();
+    return getSortTemplate();
   }
-
 
   getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
+
     return this.element;
   }
 

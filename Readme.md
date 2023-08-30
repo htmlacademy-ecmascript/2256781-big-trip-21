@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Дмитрий Лагутин](https://up.htmlacademy.ru/ecmascript/21/user/2256781).
-* Наставник: `Yulia Volkova`.
+* Наставник: [Yulia Volkova](https://htmlacademy.ru/profile/id423707).
 
 ---
 

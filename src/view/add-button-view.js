@@ -1,14 +1,10 @@
 import { createElement } from '../render.js';
-
-const createAddButtonTemplate = () => (
-  '<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>'
-);
+import { getAddButtonTemplate } from '../template/add-button-template.js';
 
 export default class AddButtonView {
   getTemplate() {
-    return createAddButtonTemplate();
+    return getAddButtonTemplate();
   }
-
 
   getElement() {
     if (!this.element) {
