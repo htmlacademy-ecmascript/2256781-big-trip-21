@@ -2,8 +2,18 @@ import { createElement } from '../render.js';
 import { getTripItemTemplate } from '../template/point-template.js';
 
 export default class TripItemView {
+  constructor({ point, offers, destinations }) {
+    this.point = point;
+    this.offers = offers;
+    this.destinations = destinations;
+  }
+
   getTemplate() {
-    return getTripItemTemplate();
+    return getTripItemTemplate({
+      point: this.point,
+      offers: this.offers,
+      destinations: this.destinations,
+    });
   }
 
   getElement() {

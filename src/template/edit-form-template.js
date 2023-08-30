@@ -1,4 +1,4 @@
-import { FULL_DATE_FORMAT } from '../const.js';
+import { CALENDAR_FORMAT } from '../const.js';
 import { capitalizeFirstLetter, formatDate } from '../utils.js';
 
 const BLANK_POINT = {
@@ -103,10 +103,10 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination, offersB
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(dateFrom, FULL_DATE_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(dateFrom, CALENDAR_FORMAT)}">
           —
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(dateTo,FULL_DATE_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(dateTo,CALENDAR_FORMAT)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -123,7 +123,7 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination, offersB
           <span class="visually-hidden">Open event</span>
         </button>
       </header>
-      
+
       <section class="event__details">
         ${offers && offers.length > 0 ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
