@@ -1,19 +1,8 @@
-import { createElement } from '../render.js';
 import { getAddButtonTemplate } from '../template/add-button-template.js';
+import AbstractView from '../framework/view/abstract-view';
 
-export default class AddButtonView {
-  getTemplate() {
+export default class AddButtonView extends AbstractView {
+  get template() {
     return getAddButtonTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

@@ -1,7 +1,7 @@
 import TripListView from '../view/list-point-view.js';
 import TripItemView from '../view/point-view.js';
 import TripEditFormItemView from '../view/edit-form-view.js';
-import { render, RenderPosition } from '../render.js';
+import { render, RenderPosition } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 
 export default class BoardPresenter {
@@ -26,7 +26,7 @@ export default class BoardPresenter {
         destination: this.destinationModel.getById(firstPoint.destination),
         offersByType: this.offerModel.getByType(firstPoint.type),
       }),
-      this.tripList.getElement(),
+      this.tripList.element,
       RenderPosition.AFTERBEGIN
     );
 
@@ -37,7 +37,7 @@ export default class BoardPresenter {
           offers: this.offerModel.get(),
           destinations: this.destinationModel.get(),
         }),
-        this.tripList.getElement()
+        this.tripList.element
       )
     );
 
