@@ -3,6 +3,7 @@ import TripItemView from '../view/point-view.js';
 import TripEditFormItemView from '../view/edit-form-view.js';
 import { render, RenderPosition } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
+import EmptyTripListView from '../view/empty-list-point-view.js';
 
 export default class BoardPresenter {
   #tripListComponent = new TripListView();
@@ -36,6 +37,11 @@ export default class BoardPresenter {
   }
 
   #renderBoard() {
+    if (this.#isNoPoints()) {
+      render(new EmptyTripListView(), this.#container);
+      return;
+    }
+
     const firstPoint = this.#pointModel.points[0];
 
     render(new SortView(), this.#container);
@@ -53,5 +59,9 @@ export default class BoardPresenter {
     this.#boardPoints.forEach((point) => this.#renderPoint(point));
 
     render(this.#tripListComponent, this.#container);
+  }
+
+  #isNoPoints() {
+    return this.#boardPoints.length === 0;
   }
 }
