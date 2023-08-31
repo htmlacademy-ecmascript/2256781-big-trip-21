@@ -1,4 +1,5 @@
-import { getDate, createRandomNumberFromRange } from '../utils.js';
+import { createRandomNumberFromRange } from '../utils/common.js';
+import { getDate } from '../utils/point.js';
 import { TYPE_POINTS } from '../const.js';
 
 const Price = {

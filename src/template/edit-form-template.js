@@ -1,5 +1,6 @@
 import { CALENDAR_FORMAT } from '../const.js';
-import { capitalizeFirstLetter, formatDate } from '../utils.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
+import { formatDate } from '../utils/point.js';
 
 const BLANK_POINT = {
   id: crypto.randomUUID(),

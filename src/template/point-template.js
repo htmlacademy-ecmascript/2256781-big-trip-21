@@ -1,4 +1,5 @@
-import { formatDate, getFormattedDateDifference, findObject } from '../utils.js';
+import { formatDate, getFormattedDateDifference } from '../utils/point.js';
+import { findObject } from '../utils/common.js';
 import {
   DAY_FORMAT,
   MONTH_FORMAT,
