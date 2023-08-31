@@ -10,6 +10,7 @@ export default class BoardPresenter {
   #destinationModel = null;
   #offerModel = null;
   #pointModel = null;
+  #boardPoints = [];
 
   constructor({ container, destinationModel, offerModel, pointModel }) {
     this.#container = container;
@@ -19,8 +20,23 @@ export default class BoardPresenter {
   }
 
   init() {
+    this.#boardPoints = [...this.#pointModel.points];
+
+    this.#renderBoard();
+  }
+
+  #renderPoint(point) {
+    const pointComponent = new TripItemView({
+      point,
+      offers: this.#offerModel.offers,
+      destinations: this.#destinationModel.destinations,
+    });
+
+    render(pointComponent, this.#tripListComponent.element);
+  }
+
+  #renderBoard() {
     const firstPoint = this.#pointModel.points[0];
-    const points = this.#pointModel.points;
 
     render(new SortView(), this.#container);
 
@@ -34,18 +50,8 @@ export default class BoardPresenter {
       RenderPosition.AFTERBEGIN
     );
 
-    points.forEach((point) => this.#renderPoint(point));
+    this.#boardPoints.forEach((point) => this.#renderPoint(point));
 
     render(this.#tripListComponent, this.#container);
-  }
-
-  #renderPoint(point) {
-    const pointComponent = new TripItemView({
-      point,
-      offers: this.#offerModel.offers,
-      destinations: this.#destinationModel.destinations,
-    });
-
-    render(pointComponent, this.#tripListComponent.element);
   }
 }
