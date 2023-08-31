@@ -5,28 +5,32 @@ import { render, RenderPosition } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 
 export default class BoardPresenter {
-  tripList = new TripListView();
+  #tripList = new TripListView();
+  #container = null;
+  #destinationModel = null;
+  #offerModel = null;
+  #pointModel = null;
 
   constructor({ container, destinationModel, offerModel, pointModel }) {
-    this.container = container;
-    this.destinationModel = destinationModel;
-    this.offerModel = offerModel;
-    this.pointModel = pointModel;
+    this.#container = container;
+    this.#destinationModel = destinationModel;
+    this.#offerModel = offerModel;
+    this.#pointModel = pointModel;
   }
 
   init() {
-    const firstPoint = this.pointModel.get()[0];
-    const points = this.pointModel.get();
+    const firstPoint = this.#pointModel.points[0];
+    const points = this.#pointModel.points;
 
-    render(new SortView(), this.container);
+    render(new SortView(), this.#container);
 
     render(
       new TripEditFormItemView({
         point: firstPoint,
-        destination: this.destinationModel.getById(firstPoint.destination),
-        offersByType: this.offerModel.getByType(firstPoint.type),
+        destination: this.#destinationModel.getById(firstPoint.destination),
+        offersByType: this.#offerModel.getByType(firstPoint.type),
       }),
-      this.tripList.element,
+      this.#tripList.element,
       RenderPosition.AFTERBEGIN
     );
 
@@ -34,13 +38,13 @@ export default class BoardPresenter {
       render(
         new TripItemView({
           point,
-          offers: this.offerModel.get(),
-          destinations: this.destinationModel.get(),
+          offers: this.#offerModel.offers,
+          destinations: this.#destinationModel.destinations,
         }),
-        this.tripList.element
+        this.#tripList.element
       )
     );
 
-    render(this.tripList, this.container);
+    render(this.#tripList, this.#container);
   }
 }
