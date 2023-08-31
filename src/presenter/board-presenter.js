@@ -5,7 +5,7 @@ import { render, RenderPosition } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 
 export default class BoardPresenter {
-  #tripList = new TripListView();
+  #tripListComponent = new TripListView();
   #container = null;
   #destinationModel = null;
   #offerModel = null;
@@ -30,21 +30,22 @@ export default class BoardPresenter {
         destination: this.#destinationModel.getById(firstPoint.destination),
         offersByType: this.#offerModel.getByType(firstPoint.type),
       }),
-      this.#tripList.element,
+      this.#tripListComponent.element,
       RenderPosition.AFTERBEGIN
     );
 
-    points.forEach((point) =>
-      render(
-        new TripItemView({
-          point,
-          offers: this.#offerModel.offers,
-          destinations: this.#destinationModel.destinations,
-        }),
-        this.#tripList.element
-      )
-    );
+    points.forEach((point) => this.#renderPoint(point));
 
-    render(this.#tripList, this.#container);
+    render(this.#tripListComponent, this.#container);
+  }
+
+  #renderPoint(point) {
+    const pointComponent = new TripItemView({
+      point,
+      offers: this.#offerModel.offers,
+      destinations: this.#destinationModel.destinations,
+    });
+
+    render(pointComponent, this.#tripListComponent.element);
   }
 }
