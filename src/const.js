@@ -19,7 +19,7 @@ const DAY_FORMAT = 'DD';
 
 const TIME_FORMAT = 'HH:mm';
 
-const CALENDAR_FORMAT = 'DD/MM/YY HH:MM';
+const CALENDAR_FORMAT = 'DD/MM/YY HH:mm';
 
 const DATE_TIME_FORMAT = 'YYYY-MM-DD';
 

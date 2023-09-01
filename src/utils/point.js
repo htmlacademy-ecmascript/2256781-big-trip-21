@@ -12,10 +12,10 @@ const getDate = ({ next }) => {
 
   return next
     ? dayjs(currentDate)
-        .add(getRandomInteger(0, 60), 'minute')
-        .add(getRandomInteger(0, 24), 'hour')
-        .add(getRandomInteger(0, 28), 'day')
-        .toDate()
+      .add(getRandomInteger(0, 60), 'minute')
+      .add(getRandomInteger(0, 24), 'hour')
+      .add(getRandomInteger(0, 28), 'day')
+      .toDate()
     : dayjs().toDate();
 };
 
