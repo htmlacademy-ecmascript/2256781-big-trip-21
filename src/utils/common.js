@@ -48,10 +48,13 @@ const capitalizeFirstLetter = (string) =>
 
 const findObject = (arr, key, value) => arr.find((obj) => obj[key] === value);
 
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
 export {
   getRandomInteger,
   getRandomArrayElement,
   createRandomNumberFromRange,
   capitalizeFirstLetter,
   findObject,
+  isEscapeKey,
 };
