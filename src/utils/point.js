@@ -12,10 +12,10 @@ const getDate = ({ next }) => {
 
   return next
     ? dayjs(currentDate)
-      .add(getRandomInteger(0, 60), 'minute')
-      .add(getRandomInteger(0, 24), 'hour')
-      .add(getRandomInteger(0, 28), 'day')
-      .toDate()
+        .add(getRandomInteger(0, 60), 'minute')
+        .add(getRandomInteger(0, 24), 'hour')
+        .add(getRandomInteger(0, 28), 'day')
+        .toDate()
     : dayjs().toDate();
 };
 
@@ -37,4 +37,28 @@ const getFormattedDateDifference = (dateFrom, dateTo) => {
   return formattedDate;
 };
 
-export { formatDate, getDateDiff, getFormattedDateDifference, getDate };
+const BLANK_POINT = {
+  id: crypto.randomUUID(),
+  basePrice: '',
+  dateFrom: new Date(),
+  dateTo: new Date(),
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: '',
+};
+
+const BLANK_DESTINATION = {
+  id: crypto.randomUUID(),
+  description: '',
+  name: '',
+  pictures: [],
+};
+export {
+  formatDate,
+  getDateDiff,
+  getFormattedDateDifference,
+  getDate,
+  BLANK_POINT,
+  BLANK_DESTINATION,
+};

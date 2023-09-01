@@ -1,17 +1,6 @@
 import { CALENDAR_FORMAT } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { formatDate } from '../utils/point.js';
-
-const BLANK_POINT = {
-  id: crypto.randomUUID(),
-  basePrice: '',
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  destination: '',
-  isFavorite: false,
-  offers: [],
-  type: '',
-};
+import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/point.js';
 
 const getOfferTemplate = ({ type, id, title, price, offers }) =>
   `
@@ -24,7 +13,7 @@ const getOfferTemplate = ({ type, id, title, price, offers }) =>
     </label>
   </div>`;
 
-const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination, offersByType }) => {
+const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_DESTINATION, offersByType }) => {
   const { type, basePrice, offers, dateFrom, dateTo } = point;
   const { name, description, pictures } = destination;
 
