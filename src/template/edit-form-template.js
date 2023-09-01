@@ -118,7 +118,7 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_
         ${offers && offers.length > 0 ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${offersByType.map(({ id, title, price }) =>getOfferTemplate({ type, id, title, price, offers })).join('')}
+            ${offersByType?.map(({ id, title, price }) =>getOfferTemplate({ type, id, title, price, offers })).join('')}
           </div>
         </section>` : ''}
         ${description ? `<section class="event__section  event__section--destination">
