@@ -9,6 +9,7 @@ const formatDate = (date, typeFormating) =>
 
 const getDate = ({ next }) => {
   const currentDate = new Date();
+  const isPlus = !getRandomInteger(0, 1);
 
   return next
     ? dayjs(currentDate)
@@ -16,7 +17,7 @@ const getDate = ({ next }) => {
       .add(getRandomInteger(0, 24), 'hour')
       .add(getRandomInteger(0, 28), 'day')
       .toDate()
-    : dayjs().toDate();
+    : dayjs().add(isPlus ? getRandomInteger(0,1) : -1, 'day').toDate();
 };
 
 const getFormattedDateDifference = (dateFrom, dateTo) => {
@@ -54,6 +55,13 @@ const BLANK_DESTINATION = {
   name: '',
   pictures: [],
 };
+
+const isPointPast = ({ dateFrom }) => dayjs().isAfter(dateFrom, 'day');
+
+const isPointPresent = ({ dateFrom }) => dayjs().isSame(dateFrom, 'day');
+
+const isPointFuture = ({ dateFrom }) => dayjs().isBefore(dateFrom, 'day');
+
 export {
   formatDate,
   getDateDiff,
@@ -61,4 +69,7 @@ export {
   getDate,
   BLANK_POINT,
   BLANK_DESTINATION,
+  isPointPast,
+  isPointPresent,
+  isPointFuture,
 };
