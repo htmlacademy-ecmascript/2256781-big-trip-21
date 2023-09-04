@@ -1,7 +1,7 @@
 import FilterView from './view/filter-view.js';
 import TripInfoView from './view/info-point-view.js';
 import AddButtonView from './view/add-button-view.js';
-import { render, RenderPosition } from './render.js';
+import { render, RenderPosition } from './framework/render.js';
 import BoardPresenter from './presenter/board-presenter.js';
 import DestinationModel from './model/destination-model.js';
 import OfferModel from './model/offer-model.js';

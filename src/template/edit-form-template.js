@@ -1,16 +1,6 @@
 import { CALENDAR_FORMAT } from '../const.js';
-import { capitalizeFirstLetter, formatDate } from '../utils.js';
-
-const BLANK_POINT = {
-  id: crypto.randomUUID(),
-  basePrice: '',
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  destination: '',
-  isFavorite: false,
-  offers: [],
-  type: '',
-};
+import { capitalizeFirstLetter } from '../utils/common.js';
+import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/point.js';
 
 const getOfferTemplate = ({ type, id, title, price, offers }) =>
   `
@@ -23,7 +13,7 @@ const getOfferTemplate = ({ type, id, title, price, offers }) =>
     </label>
   </div>`;
 
-const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination, offersByType }) => {
+const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_DESTINATION, offersByType }) => {
   const { type, basePrice, offers, dateFrom, dateTo } = point;
   const { name, description, pictures } = destination;
 
@@ -128,7 +118,7 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination, offersB
         ${offers && offers.length > 0 ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${offersByType.map(({ id, title, price }) =>getOfferTemplate({ type, id, title, price, offers })).join('')}
+            ${offersByType?.map(({ id, title, price }) =>getOfferTemplate({ type, id, title, price, offers })).join('')}
           </div>
         </section>` : ''}
         ${description ? `<section class="event__section  event__section--destination">
