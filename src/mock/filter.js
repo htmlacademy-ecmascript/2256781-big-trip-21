@@ -1,4 +1,4 @@
-import { filter } from '../utils/filter';
+import { filter } from '../utils/filter.js';
 
 function generateFilter(points) {
   return Object.entries(filter).map(([filterType, filterPoints]) => {

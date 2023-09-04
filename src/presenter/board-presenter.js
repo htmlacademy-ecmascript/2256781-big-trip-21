@@ -5,6 +5,7 @@ import { render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EmptyTripListView from '../view/empty-list-point-view.js';
 import { isEscapeKey } from '../utils/common.js';
+import { generateSort } from '../mock/sort.js';
 
 export default class BoardPresenter {
   #tripListComponent = new TripListView();
@@ -77,7 +78,8 @@ export default class BoardPresenter {
       return;
     }
 
-    render(new SortView(), this.#container);
+    const sorts = generateSort([...this.#boardPoints]);
+    render(new SortView({ sorts }), this.#container);
 
     this.#boardPoints.forEach((point) => this.#renderPoint(point));
 
