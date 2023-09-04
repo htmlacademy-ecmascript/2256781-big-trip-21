@@ -72,7 +72,7 @@ export default class BoardPresenter {
     render(pointComponent, this.#tripListComponent.element);
   }
 
-  #renderBoard() {
+  async #renderBoard() {
     if (this.#isNoPoints()) {
       render(new EmptyTripListView(), this.#container);
       return;

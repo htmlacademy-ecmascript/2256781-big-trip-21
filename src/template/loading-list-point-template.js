@@ -1,4 +1,4 @@
-const getLoadingTripListTemplate = () =>
+const getLoadingTemplate = () =>
   '<p class="trip-events__msg">Loading...</p>';
 
-export { getLoadingTripListTemplate };
+export { getLoadingTemplate };

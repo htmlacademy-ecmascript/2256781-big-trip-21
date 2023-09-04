@@ -50,6 +50,14 @@ const findObject = (arr, key, value) => arr.find((obj) => obj[key] === value);
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
+const sleep = (interval) => {
+  const now = (date = new Date()) => date.getTime();
+  const end = now() + interval;
+  while (now() < end) {
+    continue;
+  }
+};
+
 export {
   getRandomInteger,
   getRandomArrayElement,
@@ -57,4 +65,5 @@ export {
   capitalizeFirstLetter,
   findObject,
   isEscapeKey,
+  sleep,
 };

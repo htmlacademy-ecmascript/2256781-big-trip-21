@@ -1,8 +1,8 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getLoadingTripListTemplate } from '../template/loading-list-point-template.js';
+import { getLoadingTemplate } from '../template/loading-list-point-template.js';
 
-export default class LoadingTripListView extends AbstractView {
+export default class LoadingView extends AbstractView {
   get template() {
-    return getLoadingTripListTemplate();
+    return getLoadingTemplate();
   }
 }
