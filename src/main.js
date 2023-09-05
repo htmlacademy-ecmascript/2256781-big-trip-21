@@ -7,6 +7,7 @@ import DestinationModel from './model/destination-model.js';
 import OfferModel from './model/offer-model.js';
 import PointModel from './model/point-model.js';
 import MockService from './service/mock-service.js';
+import { generateFilter } from './mock/filter.js';
 
 const boxFilterElement = document.querySelector('.trip-controls__filters');
 const boxTripMainElement = document.querySelector('.trip-main');
@@ -24,8 +25,10 @@ const boardPresenter = new BoardPresenter({
   pointModel,
 });
 
+const filters = generateFilter(pointModel.points);
+
 render(new TripInfoView(), boxTripMainElement, RenderPosition.AFTERBEGIN);
 render(new AddButtonView(), boxTripMainElement);
-render(new FilterView(), boxFilterElement);
+render(new FilterView({ filters }), boxFilterElement);
 
 boardPresenter.init();

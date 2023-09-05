@@ -5,25 +5,29 @@ import { render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EmptyTripListView from '../view/empty-list-point-view.js';
 import { isEscapeKey } from '../utils/common.js';
+import { generateSort } from '../mock/sort.js';
+import { SortType } from '../const.js';
+import { sort } from '../utils/sort.js';
 
 export default class BoardPresenter {
-  #tripListComponent = new TripListView();
   #container = null;
   #destinationModel = null;
   #offerModel = null;
   #pointModel = null;
   #boardPoints = [];
+  #eventListComponent = null;
+  #currentSortType = SortType.DAY;
+  #sortComponent = null;
 
   constructor({ container, destinationModel, offerModel, pointModel }) {
     this.#container = container;
     this.#destinationModel = destinationModel;
     this.#offerModel = offerModel;
     this.#pointModel = pointModel;
+    this.#boardPoints = sort[SortType.DAY]([...this.#pointModel.points]);
   }
 
   init() {
-    this.#boardPoints = [...this.#pointModel.points];
-
     this.#renderBoard();
   }
 
@@ -68,7 +72,7 @@ export default class BoardPresenter {
       replace(pointFormComponent, pointComponent);
     }
 
-    render(pointComponent, this.#tripListComponent.element);
+    render(pointComponent, this.#eventListComponent.element);
   }
 
   #renderBoard() {
@@ -77,11 +81,15 @@ export default class BoardPresenter {
       return;
     }
 
-    render(new SortView(), this.#container);
+    this.#eventListComponent = new TripListView();
+
+    const sorts = generateSort([...this.#boardPoints]);
+    this.#sortComponent = new SortView({ sorts });
+    render(this.#sortComponent, this.#container);
 
     this.#boardPoints.forEach((point) => this.#renderPoint(point));
 
-    render(this.#tripListComponent, this.#container);
+    render(this.#eventListComponent, this.#container);
   }
 
   #isNoPoints() {
