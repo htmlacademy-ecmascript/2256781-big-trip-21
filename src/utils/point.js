@@ -17,7 +17,9 @@ const getDate = ({ next }) => {
       .add(getRandomInteger(0, 24), 'hour')
       .add(getRandomInteger(0, 28), 'day')
       .toDate()
-    : dayjs().add(isPlus ? getRandomInteger(0,1) : -1, 'day').toDate();
+    : dayjs()
+      .add(isPlus ? getRandomInteger(0, 1) : -1, 'day')
+      .toDate();
 };
 
 const getFormattedDateDifference = (dateFrom, dateTo) => {
@@ -62,6 +64,31 @@ const isPointPresent = ({ dateFrom }) => dayjs().isSame(dateFrom, 'day');
 
 const isPointFuture = ({ dateFrom }) => dayjs().isBefore(dateFrom, 'day');
 
+function sortByDay(pointA, pointB) {
+  if (dayjs(pointA.dateFrom).isAfter(dayjs(pointB.dateFrom))) {
+    return 1;
+  }
+
+  if (dayjs(pointA.dateFrom) === dayjs(pointB.dateFrom)) {
+    return 0;
+  }
+
+  if (dayjs(pointA.dateFrom).isBefore(dayjs(pointB.dateFrom))) {
+    return -1;
+  }
+}
+
+function sortByTime(pointA, pointB) {
+  return (
+    dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) -
+    dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom))
+  );
+}
+
+function sortByPrice(pointA, pointB) {
+  return pointB.basePrice - pointA.basePrice;
+}
+
 export {
   formatDate,
   getDateDiff,
@@ -72,4 +99,7 @@ export {
   isPointPast,
   isPointPresent,
   isPointFuture,
+  sortByDay,
+  sortByPrice,
+  sortByTime,
 };
