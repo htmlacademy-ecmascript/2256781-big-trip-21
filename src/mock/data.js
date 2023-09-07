@@ -1,6 +1,6 @@
 import { createRandomNumberFromRange } from '../utils/common.js';
-import { getDate } from '../utils/point.js';
-import { TYPE_POINTS } from '../const.js';
+import { getDate } from '../utils/event.js';
+import { TYPE_EVENTS } from '../const.js';
 
 const Price = {
   MIN: 1,
@@ -13,7 +13,7 @@ const destinationIdGenerator = createRandomNumberFromRange(1, 10, false);
 const favoriteFlagGenerator = createRandomNumberFromRange(0, 1, false);
 const typePointGenerator = createRandomNumberFromRange(
   0,
-  TYPE_POINTS.length - 1,
+  TYPE_EVENTS.length - 1,
   false
 );
 
@@ -396,8 +396,8 @@ function getRandomOffersByType(type) {
   return randomOffers;
 }
 
-function generatePoint() {
-  const type = TYPE_POINTS[typePointGenerator()];
+function generateEvent() {
+  const type = TYPE_EVENTS[typePointGenerator()];
   const destination = destinationIdGenerator();
   const isFavorite = !!favoriteFlagGenerator();
 
@@ -413,4 +413,4 @@ function generatePoint() {
   };
 }
 
-export { generatePoint, DESTINATIONS, OFFERS };
+export { generateEvent, DESTINATIONS, OFFERS };

@@ -1,98 +1,124 @@
-import TripListView from '../view/list-point-view.js';
-import PointView from '../view/point-view.js';
-import PointFormView from '../view/edit-form-view.js';
-import { render, replace } from '../framework/render.js';
+import ListView from '../view/list-view.js';
+import { remove, render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
-import EmptyTripListView from '../view/empty-list-point-view.js';
-import { isEscapeKey } from '../utils/common.js';
+import EmptyListView from '../view/empty-list-view.js';
 import { generateSort } from '../mock/sort.js';
-import { SortType } from '../const.js';
+import { SortType, enableSortType } from '../const.js';
 import { sort } from '../utils/sort.js';
+import EventPresenter from './event-presenter.js';
+import { updateListItem } from '../utils/common.js';
 
 export default class BoardPresenter {
   #container = null;
-  #destinationModel = null;
-  #offerModel = null;
-  #pointModel = null;
-  #boardPoints = [];
+  #destinationsModel = null;
+  #offersModel = null;
+  #eventModel = null;
+  #events = null;
   #eventListComponent = null;
-  #currentSortType = SortType.DAY;
   #sortComponent = null;
+  #noEventComponent = null;
+  #eventPresenters = new Map();
+  #currentSortType = SortType.DAY;
 
-  constructor({ container, destinationModel, offerModel, pointModel }) {
+  constructor({ container, destinationModel, offerModel, eventModel }) {
     this.#container = container;
-    this.#destinationModel = destinationModel;
-    this.#offerModel = offerModel;
-    this.#pointModel = pointModel;
-    this.#boardPoints = sort[SortType.DAY]([...this.#pointModel.points]);
+    this.#destinationsModel = destinationModel;
+    this.#offersModel = offerModel;
+    this.#eventModel = eventModel;
+    this.#events = sort[SortType.DAY]([...this.#eventModel.events]);
   }
 
   init() {
     this.#renderBoard();
   }
 
-  #renderPoint(point) {
-    const escKeyDownHandler = (evt) => {
-      if (isEscapeKey(evt)) {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      }
-    };
-
-    const pointComponent = new PointView({
-      point,
-      offers: this.#offerModel.offers,
-      destinations: this.#destinationModel.destinations,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener('keydown', escKeyDownHandler);
-      },
+  #renderEvent(event) {
+    const eventPresenter = new EventPresenter({
+      container: this.#eventListComponent,
+      destinationsModel: this.#destinationsModel,
+      offersModel: this.#offersModel,
+      onDataChange: this.#eventChangeHandler,
+      onModeChange: this.#modeChangeHandler,
     });
 
-    const pointFormComponent = new PointFormView({
-      point,
-      destination: this.#destinationModel.getById(point.destination),
-      offersByType: this.#offerModel.getByType(point.type),
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-      onFormHide: () => {
-        replaceFormToCard();
-        document.removeEventListener('keydown', escKeyDownHandler);
-      },
-    });
+    eventPresenter.init(event);
 
-    function replaceFormToCard() {
-      replace(pointComponent, pointFormComponent);
-    }
-
-    function replaceCardToForm() {
-      replace(pointFormComponent, pointComponent);
-    }
-
-    render(pointComponent, this.#eventListComponent.element);
+    this.#eventPresenters.set(event.id, eventPresenter);
   }
 
-  #renderBoard() {
-    if (this.#isNoPoints()) {
-      render(new EmptyTripListView(), this.#container);
-      return;
-    }
+  #sortEvents = (sortType) => {
+    this.#currentSortType = sortType;
+    this.#events = sort[this.#currentSortType](this.#events);
+  };
 
-    this.#eventListComponent = new TripListView();
+  #renderSort() {
+    const prevSortComponent = this.#sortComponent;
 
-    const sorts = generateSort([...this.#boardPoints]);
+    // const sorts = generateSort([...this.#events]);
+    const sorts = generateSort([...this.#events]);
+    // const test2 = Object.values(SortType).map((type) => ({
+    //   type,
+    //   isEnabled: type === this.#currentSortType,
+    //   isDisabled: !enableSortType[type],
+    // }));
+
     this.#sortComponent = new SortView({ sorts });
-    render(this.#sortComponent, this.#container);
 
-    this.#boardPoints.forEach((point) => this.#renderPoint(point));
+    if (prevSortComponent) {
+      replace(this.#sortComponent, prevSortComponent);
+      remove(prevSortComponent);
+    } else {
+      render(this.#sortComponent, this.#container);
+    }
+  }
 
+  #renderEventContainer() {
+    this.#eventListComponent = new ListView();
     render(this.#eventListComponent, this.#container);
   }
 
+  #renderBoard() {
+    this.#noEventComponent = new EmptyListView();
+    if (this.#isNoPoints()) {
+      this.#renderNoEvents();
+      return;
+    }
+
+    this.#renderSort();
+    this.#renderEventContainer();
+    this.#renderEvents();
+  }
+
+  #renderEvents() {
+    this.#events.forEach((event) => this.#renderEvent(event));
+  }
+
+  #clearEvents = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.destroy());
+    this.#eventPresenters.clear();
+  };
+
+  #renderNoEvents() {
+    render(this.#noEventComponent, this.#container);
+  }
+
+  #eventChangeHandler = (updatedEvent) => {
+    this.#events = updateListItem(this.#events, updatedEvent);
+    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #sortEventsByTypeHandler = (sortType) => {
+    this.#sortEvents(sortType);
+    this.#clearEvents();
+    this.#renderSort();
+    this.#renderEvents();
+  };
+
+  #modeChangeHandler = () => {
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+  };
+
   #isNoPoints() {
-    return this.#boardPoints.length === 0;
+    return this.#events.length === 0;
   }
 }

@@ -1,17 +1,19 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getTripEditFormItemTemplate } from '../template/edit-form-template.js';
+import { getFormItemTemplate } from '../template/form-template.js';
 
-export default class PointFormView extends AbstractView {
-  #point = null;
+export default class EventFormView extends AbstractView {
+  #event = null;
   #destination = null;
+  #offers = null;
   #offersByType = null;
   #handlerFormSubmit = null;
   #handlerFormHide = null;
 
-  constructor({ point, destination, offersByType, onFormSubmit, onFormHide }) {
+  constructor({ event, destination, offers, offersByType, onFormSubmit, onFormHide }) {
     super();
-    this.#point = point;
+    this.#event = event;
     this.#destination = destination;
+    this.#offers = offers;
     this.#offersByType = offersByType;
     this.#handlerFormSubmit = onFormSubmit;
     this.#handlerFormHide = onFormHide;
@@ -26,9 +28,10 @@ export default class PointFormView extends AbstractView {
   }
 
   get template() {
-    return getTripEditFormItemTemplate({
-      point: this.#point,
+    return getFormItemTemplate({
+      event: this.#event,
       destination: this.#destination,
+      offers: this.#offers,
       offersByType: this.#offersByType,
     });
   }

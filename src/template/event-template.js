@@ -1,5 +1,4 @@
-import { formatDate, getFormattedDateDifference } from '../utils/point.js';
-import { findObject } from '../utils/common.js';
+import { formatDate, getFormattedDateDifference } from '../utils/event.js';
 import {
   DAY_FORMAT,
   MONTH_FORMAT,
@@ -8,7 +7,7 @@ import {
   DATE_TIME_FORMAT_WITH_TIME,
 } from '../const.js';
 
-const getEventOfferTemplate = ({title, price}) => `
+const getEventOfferTemplate = ({ title, price }) => `
   <li class="event__offer">
     <span class="event__offer-title">${title}</span>
     +€&nbsp;
@@ -16,35 +15,31 @@ const getEventOfferTemplate = ({title, price}) => `
   </li>
 `;
 
-const cbEventOfferTemplate = ({offers, type}) => (offerId) => {
-  const offerByType = findObject(offers, 'type', type);
+// const cbEventOfferTemplate =
+//   ({ offers, type }) =>
+//   (offerId) => {
+//     const offerByType = findObject(offers, 'type', type);
 
-  if (!offerByType) {
-    return;
-  }
+//     if (!offerByType) {
+//       return;
+//     }
 
-  const offer = offerByType?.offers && offerByType.offers.length > 0 ? findObject(offerByType.offers, 'id', offerId) : '';
+//     const offer =
+//       offerByType?.offers && offerByType.offers.length > 0
+//         ? findObject(offerByType.offers, 'id', offerId)
+//         : '';
 
-  return getEventOfferTemplate(offer);
-};
+//     return getEventOfferTemplate(offer);
+//   };
 
-const getTripItemTemplate = ({ point, offers, destinations }) => {
-  const {
-    basePrice,
-    dateFrom,
-    dateTo,
-    destination: destinationId,
-    isFavorite,
-    offers: selectedOffers,
-    type,
-  } = point;
-
-  const { name: destinationName } = findObject(destinations, 'id', destinationId);
+const getEventTemplate = ({ event, destination, offers }) => {
+  const { basePrice, dateFrom, dateTo, isFavorite, type} = event;
+  const { name: destinationName } = destination;
 
   return `
   <li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${formatDate(dateFrom, DATE_TIME_FORMAT)}">${formatDate(dateFrom, MONTH_FORMAT)} ${formatDate(dateFrom, DAY_FORMAT)}</time>
+      <time class="event__date" datetime="${formatDate(dateFrom, DATE_TIME_FORMAT)}">${formatDate(dateFrom, MONTH_FORMAT)}${formatDate(dateFrom, DAY_FORMAT)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
@@ -62,7 +57,7 @@ const getTripItemTemplate = ({ point, offers, destinations }) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${selectedOffers.map(cbEventOfferTemplate({offers, type})).join('')}
+        ${offers.map(getEventOfferTemplate).join('')}
       </ul>
       <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>
@@ -78,4 +73,4 @@ const getTripItemTemplate = ({ point, offers, destinations }) => {
 `;
 };
 
-export { getTripItemTemplate };
+export { getEventTemplate };

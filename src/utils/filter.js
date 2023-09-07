@@ -1,7 +1,7 @@
 import { FilterType } from '../const.js';
-import { isPointPast } from './point.js';
-import { isPointPresent } from './point.js';
-import { isPointFuture } from './point.js';
+import { isPointPast } from './event.js';
+import { isPointPresent } from './event.js';
+import { isPointFuture } from './event.js';
 
 const filter = {
   [FilterType.EVERYTHING]: (points) => [...points],
