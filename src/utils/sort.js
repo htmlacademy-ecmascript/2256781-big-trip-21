@@ -1,5 +1,5 @@
 import { SortType } from '../const.js';
-import { sortByDay, sortByTime, sortByPrice } from './point.js';
+import { sortByDay, sortByTime, sortByPrice } from './event.js';
 
 const sortEvent = SortType.EVENT;
 const sortOffer = SortType.OFFER;

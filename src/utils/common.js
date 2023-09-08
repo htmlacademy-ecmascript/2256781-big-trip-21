@@ -58,6 +58,11 @@ const sleep = (interval) => {
   }
 };
 
+const updateListItem = (listItems, updatedItem, key = 'id') =>
+  listItems.map((item) =>
+    item[key] === updatedItem[key] ? updatedItem : item
+  );
+
 export {
   getRandomInteger,
   getRandomArrayElement,
@@ -66,4 +71,5 @@ export {
   findObject,
   isEscapeKey,
   sleep,
+  updateListItem,
 };

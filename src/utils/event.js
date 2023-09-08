@@ -4,6 +4,11 @@ import { getRandomInteger } from './common';
 const getDateDiff = (fromDate, toDate, unit = 'ms') =>
   dayjs(toDate).diff(dayjs(fromDate), unit);
 
+/**
+ * @param {dayjs.ConfigType} date
+ * @param {string} typeFormating
+ * @returns {string}
+ */
 const formatDate = (date, typeFormating) =>
   date ? dayjs(date).format(typeFormating) : '';
 
@@ -64,7 +69,7 @@ const isPointPresent = ({ dateFrom }) => dayjs().isSame(dateFrom, 'day');
 
 const isPointFuture = ({ dateFrom }) => dayjs().isBefore(dateFrom, 'day');
 
-function sortByDay(pointA, pointB) {
+const sortByDay = (pointA, pointB) => {
   if (dayjs(pointA.dateFrom).isAfter(dayjs(pointB.dateFrom))) {
     return 1;
   }
@@ -76,18 +81,16 @@ function sortByDay(pointA, pointB) {
   if (dayjs(pointA.dateFrom).isBefore(dayjs(pointB.dateFrom))) {
     return -1;
   }
-}
+};
 
-function sortByTime(pointA, pointB) {
-  return (
-    dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) -
-    dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom))
-  );
-}
+const sortByTime = (pointA, pointB) =>
+  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) -
+  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
 
-function sortByPrice(pointA, pointB) {
-  return pointB.basePrice - pointA.basePrice;
-}
+const sortByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
+
+const getMappedObjectsByIds = (listItems, ids, key = 'id') =>
+  ids.map((id) => listItems.find((item) => item[key] === id));
 
 export {
   formatDate,
@@ -102,4 +105,5 @@ export {
   sortByDay,
   sortByPrice,
   sortByTime,
+  getMappedObjectsByIds,
 };

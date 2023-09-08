@@ -1,11 +1,11 @@
 import FilterView from './view/filter-view.js';
-import TripInfoView from './view/info-point-view.js';
-import AddButtonView from './view/add-button-view.js';
+import BriefView from './view/brief-view.js';
+import AddButtonView from './view/add-view.js';
 import { render, RenderPosition } from './framework/render.js';
-import BoardPresenter from './presenter/board-presenter.js';
+import StoryPresenter from './presenter/story-presenter.js';
 import DestinationModel from './model/destination-model.js';
 import OfferModel from './model/offer-model.js';
-import PointModel from './model/point-model.js';
+import EventModel from './model/event-model.js';
 import MockService from './service/mock-service.js';
 import { generateFilter } from './mock/filter.js';
 
@@ -16,19 +16,19 @@ const boxTripEventElement = document.querySelector('.trip-events');
 const mockService = new MockService();
 const destinationModel = new DestinationModel(mockService);
 const offerModel = new OfferModel(mockService);
-const pointModel = new PointModel(mockService);
+const eventModel = new EventModel(mockService);
 
-const boardPresenter = new BoardPresenter({
+const storyPresenter = new StoryPresenter({
   container: boxTripEventElement,
   destinationModel,
   offerModel,
-  pointModel,
+  eventModel: eventModel,
 });
 
-const filters = generateFilter(pointModel.points);
+const filters = generateFilter(eventModel.events);
 
-render(new TripInfoView(), boxTripMainElement, RenderPosition.AFTERBEGIN);
+render(new BriefView(), boxTripMainElement, RenderPosition.AFTERBEGIN);
 render(new AddButtonView(), boxTripMainElement);
 render(new FilterView({ filters }), boxFilterElement);
 
-boardPresenter.init();
+storyPresenter.init();

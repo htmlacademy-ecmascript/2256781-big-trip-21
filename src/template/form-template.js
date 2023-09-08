@@ -1,11 +1,11 @@
 import { CALENDAR_FORMAT } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/point.js';
+import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/event.js';
 
 const getOfferTemplate = ({ type, id, title, price, offers }) =>
   `
   <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-luggage" ${offers.some((offer) => offer === id) ? 'checked' : ''}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-luggage" ${offers.some((offer) => offer.id === id) ? 'checked' : ''}>
     <label class="event__offer-label" for="event-offer-${type}-${id}">
       <span class="event__offer-title">${title}</span>
       +€&nbsp;
@@ -13,8 +13,13 @@ const getOfferTemplate = ({ type, id, title, price, offers }) =>
     </label>
   </div>`;
 
-const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_DESTINATION, offersByType }) => {
-  const { type, basePrice, offers, dateFrom, dateTo } = point;
+const getFormItemTemplate = ({
+  event = BLANK_POINT,
+  destination = BLANK_DESTINATION,
+  offers,
+  offersByType,
+}) => {
+  const { type, basePrice, dateFrom, dateTo } = event;
   const { name, description, pictures } = destination;
 
   return `<li class="trip-events__item">
@@ -96,7 +101,7 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_
           <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(dateFrom, CALENDAR_FORMAT)}">
           —
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(dateTo,CALENDAR_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(dateTo, CALENDAR_FORMAT)}">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -115,10 +120,10 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_
       </header>
 
       <section class="event__details">
-        ${offers && offers.length > 0 ? `<section class="event__section  event__section--offers">
+        ${offersByType && offersByType.length > 0 ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${offersByType?.map(({ id, title, price }) =>getOfferTemplate({ type, id, title, price, offers })).join('')}
+            ${offersByType?.map(({ id, title, price }) => getOfferTemplate({ type, id, title, price, offers })).join('')}
           </div>
         </section>` : ''}
         ${description ? `<section class="event__section  event__section--destination">
@@ -131,4 +136,4 @@ const getTripEditFormItemTemplate = ({ point = BLANK_POINT, destination = BLANK_
   </li>`;
 };
 
-export { getTripEditFormItemTemplate };
+export { getFormItemTemplate };
