@@ -3,7 +3,7 @@ import { remove, render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import { generateSort } from '../mock/sort.js';
-import { SortType, enableSortType } from '../const.js';
+import { SortType } from '../const.js';
 import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
 import { updateListItem } from '../utils/common.js';
