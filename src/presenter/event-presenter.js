@@ -85,48 +85,6 @@ export default class EventPresenter {
     remove(this.#eventFormComponent);
   };
 
-  #getOffersByIds() {
-    return getMappedObjectsByIds(
-      this.#offersModel.getByType(this.#event.type),
-      this.#event.offers
-    );
-  }
-
-  #replaceFormToCard() {
-    replace(this.#eventComponent, this.#eventFormComponent);
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.DEFAULT;
-  }
-
-  #replaceCardToForm() {
-    replace(this.#eventFormComponent, this.#eventComponent);
-    document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#handleModeChange();
-    this.#mode = Mode.EDITING;
-  }
-
-  #escKeyDownHandler = (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      this.#replaceFormToCard();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
-    }
-  };
-
-  #changeModeHandler = () => {
-    // this.#replaceCardToForm();
-    // document.addEventListener('keydown', this.#escKeyDownHandler);
-  };
-
-  #closeFormHandler = () => {
-    //   this.#replaceFormToCard();
-    //   document.removeEventListener('keydown', this.#escKeyDownHandler);
-  };
-
-  #changeDataHandler = () => {
-    this.#handleDataChange();
-  };
-
   #buttonEditClickHandler = () => {
     this.#replaceCardToForm();
   };
@@ -146,4 +104,32 @@ export default class EventPresenter {
     this.#handleDataChange(event);
     this.#replaceFormToCard();
   };
+
+  #escKeyDownHandler = (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      this.#replaceFormToCard();
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+    }
+  };
+
+  #getOffersByIds() {
+    return getMappedObjectsByIds(
+      this.#offersModel.getByType(this.#event.type),
+      this.#event.offers
+    );
+  }
+
+  #replaceFormToCard() {
+    replace(this.#eventComponent, this.#eventFormComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
+  }
+
+  #replaceCardToForm() {
+    this.#handleModeChange();
+    replace(this.#eventFormComponent, this.#eventComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.EDITING;
+  }
 }

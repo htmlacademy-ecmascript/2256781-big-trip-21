@@ -2,7 +2,7 @@ import FilterView from './view/filter-view.js';
 import BriefView from './view/brief-view.js';
 import AddButtonView from './view/add-view.js';
 import { render, RenderPosition } from './framework/render.js';
-import BoardPresenter from './presenter/board-presenter.js';
+import StoryPresenter from './presenter/story-presenter.js';
 import DestinationModel from './model/destination-model.js';
 import OfferModel from './model/offer-model.js';
 import EventModel from './model/event-model.js';
@@ -18,7 +18,7 @@ const destinationModel = new DestinationModel(mockService);
 const offerModel = new OfferModel(mockService);
 const eventModel = new EventModel(mockService);
 
-const boardPresenter = new BoardPresenter({
+const storyPresenter = new StoryPresenter({
   container: boxTripEventElement,
   destinationModel,
   offerModel,
@@ -31,4 +31,4 @@ render(new BriefView(), boxTripMainElement, RenderPosition.AFTERBEGIN);
 render(new AddButtonView(), boxTripMainElement);
 render(new FilterView({ filters }), boxFilterElement);
 
-boardPresenter.init();
+storyPresenter.init();

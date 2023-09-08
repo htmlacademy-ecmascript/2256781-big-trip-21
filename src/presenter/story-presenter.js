@@ -8,7 +8,7 @@ import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
 import { updateListItem } from '../utils/common.js';
 
-export default class BoardPresenter {
+export default class StoryPresenter {
   #container = null;
   #destinationsModel = null;
   #offersModel = null;
