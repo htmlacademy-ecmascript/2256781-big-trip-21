@@ -1,18 +1,30 @@
 import { sort } from '../utils/sort.js';
-import { enableSortType, SortType } from '../const.js';
+import { enableSortType } from '../const.js';
 
-function generateSort(points) {
-  return Object.entries(sort).map(([type, sortPoints]) => {
+function generateSort(events, currentSortType) {
+  return Object.entries(sort).map(([type, sortEvents]) => {
     const isEnabled = enableSortType[type];
-    const isChecked = type === SortType.DAY;
-    const sortedPoints = isEnabled ? sortPoints(points) : [];
+    const isChecked = type === currentSortType;
+    const sortedEvents = isEnabled ? sortEvents(events) : [];
     return {
       type,
-      points: sortedPoints,
+      events: sortedEvents,
       isEnabled,
       isChecked,
     };
   });
 }
 
-export { generateSort };
+function getSortDescription(currentSortType) {
+  return Object.entries(sort).map(([type]) => {
+    const isEnabled = enableSortType[type];
+    const isChecked = type === currentSortType;
+    return {
+      type,
+      isEnabled,
+      isChecked,
+    };
+  });
+}
+
+export { generateSort, getSortDescription };

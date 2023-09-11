@@ -13,14 +13,13 @@ const formatDate = (date, typeFormating) =>
   date ? dayjs(date).format(typeFormating) : '';
 
 const getDate = ({ next }) => {
-  const currentDate = new Date();
   const isPlus = !getRandomInteger(0, 1);
 
   return next
-    ? dayjs(currentDate)
-      .add(getRandomInteger(0, 60), 'minute')
-      .add(getRandomInteger(0, 24), 'hour')
+    ? dayjs()
       .add(getRandomInteger(0, 28), 'day')
+      .add(getRandomInteger(0, 24), 'hour')
+      .add(getRandomInteger(0, 60), 'minute')
       .toDate()
     : dayjs()
       .add(isPlus ? getRandomInteger(0, 1) : -1, 'day')
@@ -84,10 +83,10 @@ const sortByDay = (pointA, pointB) => {
 };
 
 const sortByTime = (pointA, pointB) =>
-  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) -
-  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom)) -
+  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
 
-const sortByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
+const sortByPrice = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
 
 const getMappedObjectsByIds = (listItems, ids, key = 'id') =>
   ids.map((id) => listItems.find((item) => item[key] === id));
