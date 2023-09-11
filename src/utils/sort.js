@@ -5,9 +5,9 @@ const sortEvent = SortType.EVENT;
 const sortOffer = SortType.OFFER;
 
 const sort = {
-  [SortType.DAY]: (points) => points.toSorted(sortByDay),
-  [SortType.PRICE]: (points) => points.toSorted(sortByPrice),
-  [SortType.TIME]: (points) => points.toSorted(sortByTime),
+  [SortType.DAY]: (events) => events.toSorted(sortByDay),
+  [SortType.PRICE]: (events) => events.toSorted(sortByPrice),
+  [SortType.TIME]: (events) => events.toSorted(sortByTime),
   [sortEvent]: () => {
     throw new Error(`Sort by ${sortEvent} isn't implemented!`);
   },

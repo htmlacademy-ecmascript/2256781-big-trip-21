@@ -2,7 +2,7 @@ import ListView from '../view/list-view.js';
 import { remove, render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
-import { generateSort } from '../mock/sort.js';
+import { getSortDescription } from '../mock/sort.js';
 import { SortType } from '../const.js';
 import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
@@ -10,14 +10,19 @@ import { updateListItem } from '../utils/common.js';
 
 export default class StoryPresenter {
   #container = null;
+
   #destinationsModel = null;
   #offersModel = null;
   #eventModel = null;
+
   #events = null;
   #eventListComponent = null;
+
   #sortComponent = null;
   #noEventComponent = null;
+
   #eventPresenters = new Map();
+
   #currentSortType = SortType.DAY;
 
   constructor({ container, destinationModel, offerModel, eventModel }) {
@@ -54,15 +59,12 @@ export default class StoryPresenter {
   #renderSort() {
     const prevSortComponent = this.#sortComponent;
 
-    // const sorts = generateSort([...this.#events]);
-    const sorts = generateSort([...this.#events]);
-    // const test2 = Object.values(SortType).map((type) => ({
-    //   type,
-    //   isEnabled: type === this.#currentSortType,
-    //   isDisabled: !enableSortType[type],
-    // }));
+    const sortingDescription = getSortDescription(this.#currentSortType);
 
-    this.#sortComponent = new SortView({ sorts });
+    this.#sortComponent = new SortView({
+      sorts: sortingDescription,
+      onChangeSort: this.#eventSortingHandler,
+    });
 
     if (prevSortComponent) {
       replace(this.#sortComponent, prevSortComponent);
@@ -107,11 +109,13 @@ export default class StoryPresenter {
     this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
   };
 
-  #sortEventsByTypeHandler = (sortType) => {
-    this.#sortEvents(sortType);
-    this.#clearEvents();
-    this.#renderSort();
-    this.#renderEvents();
+  #eventSortingHandler = (sortType) => {
+    if (this.#currentSortType !== sortType) {
+      this.#sortEvents(sortType);
+      this.#clearEvents();
+      this.#renderSort();
+      this.#renderEvents();
+    }
   };
 
   #modeChangeHandler = () => {
