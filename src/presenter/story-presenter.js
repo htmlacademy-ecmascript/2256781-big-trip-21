@@ -3,10 +3,10 @@ import { remove, render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import EmptyListView from '../view/empty-list-view.js';
 import { getSortDescription } from '../mock/sort.js';
-import { SortType } from '../const.js';
+import { SortType, TypeChange } from '../const.js';
 import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
-import { updateListItem } from '../utils/common.js';
+import { deleteListItem, updateListItem } from '../utils/common.js';
 
 export default class StoryPresenter {
   #container = null;
@@ -42,7 +42,7 @@ export default class StoryPresenter {
       container: this.#eventListComponent,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#eventChangeHandler,
+      onDataChange: this.#changeEventHandler,
       onModeChange: this.#modeChangeHandler,
     });
 
@@ -63,7 +63,7 @@ export default class StoryPresenter {
 
     this.#sortComponent = new SortView({
       sorts: sortingDescription,
-      onChangeSort: this.#eventSortingHandler,
+      onChangeSort: this.#sortEventsHandler,
     });
 
     if (prevSortComponent) {
@@ -104,12 +104,18 @@ export default class StoryPresenter {
     render(this.#noEventComponent, this.#container);
   }
 
-  #eventChangeHandler = (updatedEvent) => {
-    this.#events = updateListItem(this.#events, updatedEvent);
-    this.#eventPresenters.get(updatedEvent.id).init(updatedEvent);
+  #changeEventHandler = (event, type = TypeChange.CHANGE) => {
+    if (type === TypeChange.CHANGE) {
+      this.#events = updateListItem(this.#events, event);
+    } else if (type === TypeChange.DELETE) {
+      this.#events = deleteListItem(this.#events, event);
+    }
+
+    this.#clearEvents();
+    this.init();
   };
 
-  #eventSortingHandler = (sortType) => {
+  #sortEventsHandler = (sortType) => {
     if (this.#currentSortType !== sortType) {
       this.#sortEvents(sortType);
       this.#clearEvents();

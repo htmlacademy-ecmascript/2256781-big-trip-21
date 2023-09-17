@@ -15,24 +15,7 @@ const getEventOfferTemplate = ({ title, price }) => `
   </li>
 `;
 
-// const cbEventOfferTemplate =
-//   ({ offers, type }) =>
-//   (offerId) => {
-//     const offerByType = findObject(offers, 'type', type);
-
-//     if (!offerByType) {
-//       return;
-//     }
-
-//     const offer =
-//       offerByType?.offers && offerByType.offers.length > 0
-//         ? findObject(offerByType.offers, 'id', offerId)
-//         : '';
-
-//     return getEventOfferTemplate(offer);
-//   };
-
-const getEventTemplate = ({ event, destination, offers }) => {
+const getEventTemplate = ({ event, destination, checkedOffers = [] }) => {
   const { basePrice, dateFrom, dateTo, isFavorite, type} = event;
   const { name: destinationName } = destination;
 
@@ -57,7 +40,7 @@ const getEventTemplate = ({ event, destination, offers }) => {
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${offers.map(getEventOfferTemplate).join('')}
+        ${checkedOffers.map(getEventOfferTemplate).join('')}
       </ul>
       <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>

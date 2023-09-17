@@ -43,8 +43,8 @@ const createRandomNumberFromRange = (
   };
 };
 
-const capitalizeFirstLetter = (string) =>
-  string.charAt(0).toUpperCase() + string.slice(1);
+const capitalizeFirstLetter = (string = '') =>
+  string.length > 0 ? string.charAt(0).toUpperCase() + string.slice(1) : '';
 
 const findObject = (arr, key, value) => arr.find((obj) => obj[key] === value);
 
@@ -63,6 +63,9 @@ const updateListItem = (listItems, updatedItem, key = 'id') =>
     item[key] === updatedItem[key] ? updatedItem : item
   );
 
+const deleteListItem = (listItems, deletedItem) =>
+  listItems.filter((item) => item.id !== deletedItem.id);
+
 export {
   getRandomInteger,
   getRandomArrayElement,
@@ -72,4 +75,5 @@ export {
   isEscapeKey,
   sleep,
   updateListItem,
+  deleteListItem,
 };
