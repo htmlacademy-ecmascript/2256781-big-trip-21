@@ -2,7 +2,7 @@ import EventView from '../view/event-view.js';
 import EventFormView from '../view/form-view.js';
 import { remove, render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
-import { Mode } from '../const.js';
+import { FormMode, EventMode, TypeChange } from '../const.js';
 import { getMappedObjectsByIds } from '../utils/event.js';
 
 export default class EventPresenter {
@@ -14,7 +14,7 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventFormComponent = null;
   #event = null;
-  #mode = Mode.DEFAULT;
+  #mode = EventMode.DEFAULT;
 
   #handleDataChange = null;
   #handleModeChange = null;
@@ -38,23 +38,26 @@ export default class EventPresenter {
 
     const prevEventComponent = this.#eventComponent;
     const prevFormComponent = this.#eventFormComponent;
-    const offersByIds = this.#getOffersByIds();
 
     this.#eventComponent = new EventView({
       event: this.#event,
-      destination: this.#destinationsModel.getById(this.#event.destination),
-      offers: offersByIds,
-      onEditClick: this.#buttonEditClickHandler,
-      onFavoriteClick: this.#buttonFavoriteClickHandler,
+      getDestinationById: this.#getDestinationById,
+      getCheckedOffers: this.#getCheckedOffers,
+      onRolloutClick: this.#rolloutHandler,
+      onFavoriteClick: this.#favoriteHandler,
     });
 
     this.#eventFormComponent = new EventFormView({
       event: this.#event,
-      destination: this.#destinationsModel.getById(this.#event.destination),
-      offers: offersByIds,
-      offersByType: this.#offersModel.getByType(this.#event.type),
-      onResetClick: this.#buttonResetClickHandler,
-      onSubmitClick: this.#formSubmitHandler,
+      formMode: FormMode.EDITING,
+      getAllDestinations: this.#getAllDestinations,
+      getAllOffersByType: this.#getAllOffersByType,
+      getCheckedOffers: this.#getCheckedOffers,
+      getDestinationByName: this.#getDestinationByName,
+      onRollupClick: this.#rollupHandler,
+      onSaveClick: this.#saveHandler,
+      onResetClick: this.#resetHandler,
+      onDeleteClick: this.#deleteHandler,
     });
 
     if (prevEventComponent === null || prevFormComponent === null) {
@@ -62,11 +65,11 @@ export default class EventPresenter {
       return;
     }
 
-    if (this.#mode === Mode.DEFAULT) {
+    if (this.#mode === EventMode.CARD) {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#mode === Mode.EDITING) {
+    if (this.#mode === EventMode.FORM) {
       replace(this.#eventFormComponent, prevFormComponent);
     }
 
@@ -75,7 +78,8 @@ export default class EventPresenter {
   }
 
   resetView = () => {
-    if (this.#mode !== Mode.DEFAULT) {
+    if (this.#mode !== EventMode.DEFAULT) {
+      this.#eventFormComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
   };
@@ -85,23 +89,34 @@ export default class EventPresenter {
     remove(this.#eventFormComponent);
   };
 
-  #buttonEditClickHandler = () => {
+  #rolloutHandler = () => {
     this.#replaceCardToForm();
   };
 
-  #buttonFavoriteClickHandler = () => {
+  #favoriteHandler = () => {
     this.#handleDataChange({
       ...this.#event,
       isFavorite: !this.#event.isFavorite,
     });
   };
 
-  #buttonResetClickHandler = () => {
+  #rollupHandler = () => {
+    this.#eventFormComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
-  #formSubmitHandler = (event) => {
+  #resetHandler = () => {
+    this.#eventFormComponent.reset(this.#event);
+    this.#replaceFormToCard();
+  };
+
+  #saveHandler = (event) => {
     this.#handleDataChange(event);
+    this.#replaceFormToCard();
+  };
+
+  #deleteHandler = (event) => {
+    this.#handleDataChange(event, TypeChange.DELETE);
     this.#replaceFormToCard();
   };
 
@@ -113,23 +128,34 @@ export default class EventPresenter {
     }
   };
 
-  #getOffersByIds() {
-    return getMappedObjectsByIds(
-      this.#offersModel.getByType(this.#event.type),
-      this.#event.offers
-    );
-  }
+  #getAllOffersByType = (type) => this.#offersModel.getByType(type);
+
+  #getAllDestinations = () => this.#destinationsModel.destinations;
+
+  #getDestinationById = (id) => this.#destinationsModel.getById(id);
+
+  #getDestinationByName = (name) => this.#destinationsModel.getByName(name);
+
+  /**
+   *
+   * @param {string} type Тип события
+   * @param {Array<number>} checkedOfferIds Массив выделенных предложений (вернее их ids)
+   */
+  #getCheckedOffers = (type, checkedOfferIds) => {
+    const offersByType = this.#offersModel.getByType(type);
+    return getMappedObjectsByIds(offersByType, checkedOfferIds);
+  };
 
   #replaceFormToCard() {
     replace(this.#eventComponent, this.#eventFormComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.DEFAULT;
+    this.#mode = EventMode.DEFAULT;
   }
 
   #replaceCardToForm() {
     this.#handleModeChange();
     replace(this.#eventFormComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = Mode.EDITING;
+    this.#mode = EventMode.EDITING;
   }
 }

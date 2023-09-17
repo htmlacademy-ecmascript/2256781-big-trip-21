@@ -3,7 +3,7 @@
  * в борду
  * @type {string}
  */
-const EVENT_COUNT = 3;
+const EVENT_COUNT = 2;
 
 /** @enum {string} Перечисление возможных типов событий */
 const TYPE_EVENTS = [
@@ -62,10 +62,24 @@ const FilterType = {
   PAST: 'past',
 };
 
-/** @enum {string} Перечисление возможных режимов карточки события */
-const Mode = {
-  DEFAULT: 'DEFAULT',
+/**
+ * @enum {string} Режим в котором открыта форма
+ */
+const FormMode = {
   EDITING: 'EDITING',
+  CREATING: 'CREATING'
+};
+
+/** @enum {string} Перечисление возможных режимов карточки события */
+const EventMode = {
+  CARD: 'CARD',
+  FORM: 'FORM',
+};
+
+/** @enum {string} Перечисление возможных режимов изменения события*/
+const TypeChange = {
+  DELETE: 'DELETE',
+  CHANGE: 'CHANGE',
 };
 
 /** @enum {string} Перечисление возможных сортировок */
@@ -96,7 +110,9 @@ export {
   DATE_TIME_FORMAT_WITH_TIME,
   TYPE_EVENTS,
   FilterType,
-  Mode,
+  EventMode,
   SortType,
   enableSortType,
+  FormMode,
+  TypeChange,
 };

@@ -1,26 +1,46 @@
-import { CALENDAR_FORMAT } from '../const.js';
+import { CALENDAR_FORMAT, TYPE_EVENTS, FormMode } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/event.js';
 
 const getOfferTemplate = ({ type, id, title, price, offers }) =>
   `
-  <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-luggage" ${offers.some((offer) => offer.id === id) ? 'checked' : ''}>
-    <label class="event__offer-label" for="event-offer-${type}-${id}">
-      <span class="event__offer-title">${title}</span>
-      +€&nbsp;
-      <span class="event__offer-price">${price}</span>
-    </label>
-  </div>`;
+    <div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-luggage" data-id="${id}" ${offers.some((offer) => offer.id === id) ? 'checked' : ''}>
+      <label class="event__offer-label" for="event-offer-${type}-${id}">
+        <span class="event__offer-title">${title}</span>
+        +€&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </label>
+    </div>
+  `;
 
-const getFormItemTemplate = ({
+const getEventTypeTemplate = () =>
+  `
+    ${TYPE_EVENTS.map((type) => `
+      <div class="event__type-item">
+        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
+        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
+    </div>`).join('')}
+  `;
+
+const getDestinationListTemplate = ({ destinations }) =>
+  `
+    <datalist id="destination-list-1">
+      ${destinations?.map((item) => `<option value="${item.name}"></option>`).join('')}
+    </datalist>
+  `;
+
+const getFormTemplate = ({
   event = BLANK_POINT,
   destination = BLANK_DESTINATION,
-  offers,
-  offersByType,
+  formMode,
+  destinations = [],
+  checkedOffers = [],
+  allOffersByType = [],
 }) => {
   const { type, basePrice, dateFrom, dateTo } = event;
   const { name, description, pictures } = destination;
+  const isEditingMode = formMode === FormMode.EDITING;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -35,51 +55,7 @@ const getFormItemTemplate = ({
           <div class="event__type-list">
             <fieldset class="event__type-group">
               <legend class="visually-hidden">Event type</legend>
-
-              <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked="">
-                <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-              </div>
-
-              <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-              </div>
+              ${getEventTypeTemplate()}
             </fieldset>
           </div>
         </div>
@@ -89,11 +65,7 @@ const getFormItemTemplate = ({
             ${capitalizeFirstLetter(type)}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
-          <datalist id="destination-list-1">
-            <option value="Amsterdam"></option>
-            <option value="Geneva"></option>
-            <option value="Chamonix"></option>
-          </datalist>
+          ${getDestinationListTemplate({destinations})}
         </div>
 
         <div class="event__field-group  event__field-group--time">
@@ -113,17 +85,17 @@ const getFormItemTemplate = ({
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">Delete</button>
+        <button class="event__reset-btn" type="reset">${isEditingMode ? 'Delete' : 'Cancel'}</button>
         <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
+        <span class="visually-hidden">Open event</span>
         </button>
       </header>
 
       <section class="event__details">
-        ${offersByType && offersByType.length > 0 ? `<section class="event__section  event__section--offers">
+        ${allOffersByType && allOffersByType.length > 0 ? `<section class="event__section  event__section--offers">
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
           <div class="event__available-offers">
-            ${offersByType?.map(({ id, title, price }) => getOfferTemplate({ type, id, title, price, offers })).join('')}
+            ${allOffersByType?.map(({ id, title, price }) => getOfferTemplate({ type, id, title, price, offers: checkedOffers })).join('')}
           </div>
         </section>` : ''}
         ${description ? `<section class="event__section  event__section--destination">
@@ -136,4 +108,4 @@ const getFormItemTemplate = ({
   </li>`;
 };
 
-export { getFormItemTemplate };
+export { getFormTemplate };
