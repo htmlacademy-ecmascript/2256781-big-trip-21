@@ -67,7 +67,7 @@ const FilterType = {
  */
 const FormMode = {
   EDITING: 'EDITING',
-  CREATING: 'CREATING'
+  CREATING: 'CREATING',
 };
 
 /** @enum {string} Перечисление возможных режимов карточки события */
@@ -76,10 +76,18 @@ const EventMode = {
   FORM: 'FORM',
 };
 
-/** @enum {string} Перечисление возможных режимов изменения события*/
-const TypeChange = {
+/** @enum {string} Перечисление возможных действия пользователя с событием */
+const UserAction = {
   DELETE: 'DELETE',
   CHANGE: 'CHANGE',
+  ADD: 'ADD',
+};
+
+/** @enum {string} Перечисление возможных типов перерисовки интерфейса */
+const TypeChange = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
 
 /** @enum {string} Перечисление возможных сортировок */
@@ -114,5 +122,6 @@ export {
   SortType,
   enableSortType,
   FormMode,
+  UserAction,
   TypeChange,
 };

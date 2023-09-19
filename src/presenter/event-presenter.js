@@ -2,7 +2,7 @@ import EventView from '../view/event-view.js';
 import EventFormView from '../view/form-view.js';
 import { remove, render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
-import { FormMode, EventMode, TypeChange } from '../const.js';
+import { FormMode, EventMode, UserAction, TypeChange } from '../const.js';
 import { getMappedObjectsByIds } from '../utils/event.js';
 
 export default class EventPresenter {
@@ -93,33 +93,56 @@ export default class EventPresenter {
     this.#replaceCardToForm();
   };
 
+  /**
+   * Обрабатывает нажатие пользователем на звёздочку
+   */
   #favoriteHandler = () => {
-    this.#handleDataChange({
+    this.#handleDataChange(UserAction.CHANGE, TypeChange.PATCH, {
       ...this.#event,
       isFavorite: !this.#event.isFavorite,
     });
   };
 
+  /**
+   * Обрабатывает нажатие пользователем на стрелочку вверх
+   */
   #rollupHandler = () => {
     this.#eventFormComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
+  /**
+   * Обрабатывает нажатие пользователем на кнопку Cancel
+   */
   #resetHandler = () => {
     this.#eventFormComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
+  // REVIEW:
+  // применить ф-ию для вычисления типа изменения
+  /**
+   * Обрабатывает нажатие пользователем на кнопку Save
+   * @param {Event} event
+   */
   #saveHandler = (event) => {
-    this.#handleDataChange(event);
+    this.#handleDataChange(UserAction.CHANGE, TypeChange.MINOR, event);
     this.#replaceFormToCard();
   };
 
+  /**
+   * Обрабатывает нажатие пользователем на кнопку Delete
+   * @param {*} event
+   */
   #deleteHandler = (event) => {
-    this.#handleDataChange(event, TypeChange.DELETE);
+    this.#handleDataChange(UserAction.DELETE, TypeChange.MAJOR, event);
     this.#replaceFormToCard();
   };
 
+  /**
+   * Обрабатывает нажатие пользователем на клавишу Esc
+   * @param {Event} evt
+   */
   #escKeyDownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
@@ -128,16 +151,35 @@ export default class EventPresenter {
     }
   };
 
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @param {string} type
+   * @returns {Array<Offer>}
+   */
   #getAllOffersByType = (type) => this.#offersModel.getByType(type);
 
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @returns {Array<Destination>}
+   */
   #getAllDestinations = () => this.#destinationsModel.destinations;
 
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @returns {Destination}
+   */
   #getDestinationById = (id) => this.#destinationsModel.getById(id);
 
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @param {String} name
+   * @returns {Destination}
+   */
   #getDestinationByName = (name) => this.#destinationsModel.getByName(name);
 
   /**
-   *
+   * Маппит по типу и по переданным ids объекты offer
+   * Обработчик передаётся во вьюхи EventFormView, EventView
    * @param {string} type Тип события
    * @param {Array<number>} checkedOfferIds Массив выделенных предложений (вернее их ids)
    */
