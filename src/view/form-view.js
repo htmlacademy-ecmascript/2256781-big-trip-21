@@ -4,15 +4,15 @@ import { BLANK_POINT } from '../utils/event.js';
 import { FormMode } from '../const.js';
 
 export default class EventFormView extends AbstractStatefulView {
-  #handlerSaveClick = null;
-  #handlerResetClick = null;
-  #handlerRollupClick = null;
-  #handlerDeleteClick = null;
+  #handleSaveClick = null;
+  #handleResetClick = null;
+  #handleRollupClick = null;
+  #handleDeleteClick = null;
 
-  #handlerGetAllDestinations = null;
-  #handlerGetAllOffersByType = null;
-  #handlerGetCheckedOffers = null;
-  #handlerGetDestinationByName = null;
+  #handleGetAllDestinations = null;
+  #handleGetAllOffersByType = null;
+  #handleGetCheckedOffers = null;
+  #handleGetDestinationByName = null;
 
   #formMode = undefined;
 
@@ -32,14 +32,14 @@ export default class EventFormView extends AbstractStatefulView {
 
     this._setState(EventFormView.parseEventToState({ event }));
 
-    this.#handlerSaveClick = onSaveClick;
-    this.#handlerRollupClick = onRollupClick;
-    this.#handlerResetClick = onResetClick;
-    this.#handlerDeleteClick = onDeleteClick;
-    this.#handlerGetAllDestinations = getAllDestinations;
-    this.#handlerGetAllOffersByType = getAllOffersByType;
-    this.#handlerGetCheckedOffers = getCheckedOffers;
-    this.#handlerGetDestinationByName = getDestinationByName;
+    this.#handleSaveClick = onSaveClick;
+    this.#handleRollupClick = onRollupClick;
+    this.#handleResetClick = onResetClick;
+    this.#handleDeleteClick = onDeleteClick;
+    this.#handleGetAllDestinations = getAllDestinations;
+    this.#handleGetAllOffersByType = getAllOffersByType;
+    this.#handleGetCheckedOffers = getCheckedOffers;
+    this.#handleGetDestinationByName = getDestinationByName;
 
     this.#formMode = formMode;
 
@@ -93,13 +93,13 @@ export default class EventFormView extends AbstractStatefulView {
   get template() {
     const event = this._state.event;
     const destinationId = event.destination;
-    const destinations = this.#handlerGetAllDestinations();
+    const destinations = this.#handleGetAllDestinations();
     const destination = destinations.find((item) => item.id === destinationId);
-    const checkedOffers = this.#handlerGetCheckedOffers(
+    const checkedOffers = this.#handleGetCheckedOffers(
       event.type,
       event.offers
     );
-    const allOffersByType = this.#handlerGetAllOffersByType(event.type);
+    const allOffersByType = this.#handleGetAllOffersByType(event.type);
     const formMode = this.#formMode;
 
     return getFormTemplate({
@@ -121,7 +121,7 @@ export default class EventFormView extends AbstractStatefulView {
 
     const event = EventFormView.parseStateToEvent(this._state);
 
-    this.#handlerSaveClick(event);
+    this.#handleSaveClick(event);
   };
 
   /**
@@ -130,7 +130,7 @@ export default class EventFormView extends AbstractStatefulView {
    */
   #rollupHandler = (evt) => {
     evt.preventDefault();
-    this.#handlerRollupClick();
+    this.#handleRollupClick();
   };
 
   /**
@@ -159,14 +159,14 @@ export default class EventFormView extends AbstractStatefulView {
     this.updateElement({
       event: {
         ...this._state.event,
-        destination: this.#handlerGetDestinationByName(evt.target.value)?.id,
+        destination: this.#handleGetDestinationByName(evt.target.value)?.id,
       },
     });
   };
 
   #resetHandler = (evt) => {
     evt.preventDefault();
-    this.#handlerResetClick();
+    this.#handleResetClick();
   };
 
   #deleteHandler = (evt) => {
@@ -174,7 +174,7 @@ export default class EventFormView extends AbstractStatefulView {
 
     evt.preventDefault();
 
-    this.#handlerDeleteClick(event);
+    this.#handleDeleteClick(event);
   };
 
   #changePriceHandler = (evt) => {

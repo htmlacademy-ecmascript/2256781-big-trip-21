@@ -1,57 +1,55 @@
 import ListView from '../view/list-view.js';
 import { remove, render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
-import EmptyListView from '../view/empty-list-view.js';
+import MessageView from '../view/message-view.js';
 import { getSortDescription } from '../mock/sort.js';
-import { FilterType, SortType, TypeChange, UserAction } from '../const.js';
+import { AppMode, SortType, TypeChange, UserAction } from '../const.js';
 import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
 import { filter } from '../utils/filter.js';
 
-export default class StoryPresenter {
+export default class RoutePresenter {
   #container = null;
 
   #destinationsModel = null;
   #offersModel = null;
   #eventModel = null;
+  #filterModel = null;
+  #addModel = null;
 
-  #eventListComponent = null;
-
+  #eventListComponent = new ListView();
   #sortComponent = null;
   #noEventComponent = null;
 
   #eventPresenters = new Map();
 
   #currentSortType = SortType.DAY;
-  #isCreating = false; //событие в процессе создания?
 
-  // REVIEW:
-  // перенести поинт презентер из main.js
-  // подписать на изменение модели filterModel
-  constructor({ container, destinationModel, offerModel, eventModel }) {
+  constructor({
+    container,
+    destinationModel,
+    offerModel,
+    eventModel,
+    filterModel,
+    addModel,
+  }) {
     this.#container = container;
     this.#destinationsModel = destinationModel;
     this.#offersModel = offerModel;
     this.#eventModel = eventModel;
-    //this.#events = sort[SortType.DAY]([...this.#eventModel.events]);
-
-    // сюда перенести создание поинт презентера
-    // из main.js
+    this.#filterModel = filterModel;
+    this.#addModel = addModel;
 
     this.#eventModel.addObserver(this.#modelEventHandler);
-    //по аналогии со строкой выше, сюда можно внести
-    //колбэк для вызова при событии из this.#filterModel
+    this.#filterModel.addObserver(this.#modelEventHandler);
   }
 
   init() {
     this.#renderBoard();
   }
 
-  // REVIEW:
-  // отредактировать когда создам filterModel
   get events() {
-    // const filterType = this.#filterModel.filters;
-    const filterType = FilterType.EVERYTHING;
+    const filterType = this.#filterModel.filter;
     const filteredEvents = filter[filterType](this.#eventModel.events);
 
     return sort[this.#currentSortType](filteredEvents);
@@ -59,10 +57,10 @@ export default class StoryPresenter {
 
   #renderEvent(event) {
     const eventPresenter = new EventPresenter({
-      container: this.#eventListComponent,
+      eventListContainer: this.#eventListComponent.element,
       destinationsModel: this.#destinationsModel,
       offersModel: this.#offersModel,
-      onDataChange: this.#viewActionHandler,
+      onDataChange: this.#dataChangeHandler,
       onModeChange: this.#modeChangeHandler,
     });
 
@@ -71,12 +69,6 @@ export default class StoryPresenter {
     this.#eventPresenters.set(event.id, eventPresenter);
   }
 
-  // REVIEW: Нужна ли?
-  #sortEvents = (sortType) => {
-    this.#currentSortType = sortType;
-    this.events = sort[this.#currentSortType](this.events);
-  };
-
   #renderSort() {
     const prevSortComponent = this.#sortComponent;
 
@@ -84,7 +76,7 @@ export default class StoryPresenter {
 
     this.#sortComponent = new SortView({
       sorts: sortingDescription,
-      onChangeSort: this.#sortEventsHandler,
+      onChangeSort: this.#sortEventHandler,
     });
 
     if (prevSortComponent) {
@@ -95,39 +87,30 @@ export default class StoryPresenter {
     }
   }
 
-  #renderEventContainer() {
-    this.#eventListComponent = new ListView();
-    render(this.#eventListComponent, this.#container);
-  }
-
   #renderBoard() {
-    this.#noEventComponent = new EmptyListView();
     if (this.#isNoPoints()) {
       this.#renderNoEvents();
       return;
     }
 
     this.#renderSort();
-    this.#renderEventContainer();
     this.#renderEvents();
   }
 
   #renderEvents() {
+    render(this.#eventListComponent, this.#container);
+
     this.events.forEach((event) => this.#renderEvent(event));
   }
 
-  // REVIEW:
-  // когда будет презентер новой точки, здесь его нужно destroy
   #clearEvents = () => {
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
   };
 
-  // REVIEW:
-  // когда будет messageComponent его тоже нужно удалять здесь
   #clearBoard = ({ resetSortType = false } = {}) => {
     this.#clearEvents();
-    // remove(this.#messageComponent);
+    remove(this.#noEventComponent);
     remove(this.#sortComponent);
     this.#sortComponent = null;
 
@@ -137,6 +120,9 @@ export default class StoryPresenter {
   };
 
   #renderNoEvents() {
+    this.#noEventComponent = new MessageView({
+      filter: this.#filterModel.filter,
+    });
     render(this.#noEventComponent, this.#container);
   }
 
@@ -151,13 +137,13 @@ export default class StoryPresenter {
    * @param {TypeChange} updateType
    * @param {Event} update
    */
-  #viewActionHandler = (action = UserAction.CHANGE, updateType, update) => {
+  #dataChangeHandler = (action = UserAction.CHANGE, updateType, update) => {
     switch (action) {
       case UserAction.DELETE:
         this.#eventModel.delete(updateType, update);
         break;
-      case UserAction.DELETE:
-        this.#eventModel.delete(updateType, update);
+      case UserAction.ADD:
+        this.#eventModel.add(updateType, update);
         break;
       default:
         this.#eventModel.update(updateType, update);
@@ -165,9 +151,9 @@ export default class StoryPresenter {
     }
   };
 
-  #sortEventsHandler = (sortType) => {
+  #sortEventHandler = (sortType) => {
     if (this.#currentSortType !== sortType) {
-      this.#sortEvents(sortType);
+      this.#currentSortType = sortType;
       this.#clearEvents();
       this.#renderSort();
       this.#renderEvents();
@@ -175,7 +161,7 @@ export default class StoryPresenter {
   };
 
   #modeChangeHandler = () => {
-    this.#eventPresenters.forEach((presenter) => presenter.resetView());
+    // this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
   /**
@@ -185,11 +171,11 @@ export default class StoryPresenter {
    * Он служит для реагирования на изменения модели
    * По контракту у него должно быть 2 параметра
    * (второй параметр НЕ обязательный)
-   * @param {UserAction} action
+   * @param {TypeChange} type
    * @param {Event} [payload = null]
    */
-  #modelEventHandler = (action = TypeChange.PATCH, payload = null) => {
-    switch (action) {
+  #modelEventHandler = (type = TypeChange.PATCH, payload = null) => {
+    switch (type) {
       case TypeChange.MINOR:
         this.#clearBoard();
         this.#renderBoard();
@@ -205,6 +191,10 @@ export default class StoryPresenter {
   };
 
   #isNoPoints() {
+    // return (
+    //   this.events.length === 0 &&
+    //   !this.#addModel.appModel === AppMode.PRODUCTION
+    // );
     return this.events.length === 0;
   }
 }

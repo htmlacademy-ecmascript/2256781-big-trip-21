@@ -3,14 +3,14 @@ import AbstractView from '../framework/view/abstract-view.js';
 
 export default class SortView extends AbstractView {
   #sorts = null;
-  #handlerChangeSort = null;
+  #handleChangeSort = null;
 
   constructor({ sorts, onChangeSort }) {
     super();
     this.#sorts = sorts;
-    this.#handlerChangeSort = onChangeSort;
+    this.#handleChangeSort = onChangeSort;
 
-    this.element.addEventListener('click', this.#changeSort);
+    this.element.addEventListener('click', this.#changeSortHandler);
   }
 
   get template() {
@@ -21,11 +21,11 @@ export default class SortView extends AbstractView {
    * Вариант форматирования даты для dayjs
    * @param {Event} evt Объект события
    */
-  #changeSort = (evt) => {
+  #changeSortHandler = (evt) => {
     if (evt.target.dataset?.sortType && evt.target.tagName === 'INPUT') {
       evt.stopPropagation();
       evt.preventDefault();
-      this.#handlerChangeSort(evt.target.dataset.sortType);
+      this.#handleChangeSort(evt.target.dataset.sortType);
     }
   };
 }

@@ -1,81 +1,124 @@
 import BriefView from '../view/brief-view.js';
-import { render } from '../framework/render.js';
-import AddingPresenter from './adding-presenter.js';
+import { remove, render, replace } from '../framework/render.js';
+import AddPresenter from './add-presenter.js';
 import FilterPresenter from './filter-presenter.js';
+import { getMappedObjectsByIds } from '../utils/event.js';
 
 export default class BriefPresenter {
   #container = null;
   #eventModel = null;
   #destinationModel = null;
   #offerModel = null;
+  #filterModel = null;
   #renderPosition = undefined;
 
-  #addingPresenter = null;
+  #addPresenter = null;
   #filterPresenter = null;
 
-  #events = [];
-  #destinations = [];
-  #offers = [];
+  #briefComponent = null;
 
   constructor({
     container,
     eventModel,
     destinationModel,
     offerModel,
+    filterModel,
     renderPosition,
   }) {
     this.#container = container;
     this.#eventModel = eventModel;
     this.#destinationModel = destinationModel;
     this.#offerModel = offerModel;
+    this.#filterModel = filterModel;
     this.#renderPosition = renderPosition;
+
+    this.#eventModel.addObserver(this.#modelEventHandler);
+    this.#filterModel.addObserver(this.#modelEventHandler);
   }
 
   init() {
-    this.#events = this.#eventModel.events;
-    this.#destinations = this.#destinationModel.destinations;
-    this.#offers = this.#offerModel.offers;
-
     this.#renderBrief();
+    this.#renderAddButton();
+    this.#renderFilter();
   }
 
   #renderFilter() {
+    const boxFilterElement = document.querySelector('.trip-controls__filters');
+    const prevFilterPresenter = this.#filterPresenter;
+
     this.#filterPresenter = new FilterPresenter({
-      container: this.#container,
+      container: boxFilterElement,
       eventModel: this.#eventModel,
+      filterModel: this.#filterModel,
     });
+
+    if (prevFilterPresenter) {
+      prevFilterPresenter.destroy();
+    }
 
     this.#filterPresenter.init();
   }
 
-  #renderAddingButton() {
-    this.#addingPresenter = new AddingPresenter({ container: this.#container });
+  #renderAddButton() {
+    const prevAddPresenter = this.#addPresenter;
 
-    this.#addingPresenter.init();
+    this.#addPresenter = new AddPresenter({ container: this.#container });
+
+    if (prevAddPresenter) {
+      prevAddPresenter.destroy();
+    }
+
+    this.#addPresenter.init();
   }
 
   #renderBrief() {
-    const briefComponent = new BriefView({
-      destinationChain: this.#getDestinationChain(),
-      duration: this.#getTotalDuration(),
-      bottomLine: this.#getOffersBottomLine(),
+    const prevBriefComponent = this.#briefComponent;
+
+    this.#briefComponent = new BriefView({
+      getRoute: this.#getRouteHandler,
+      getDuration: this.#getDurationHandler,
+      getTotal: this.#getBottomLineHandler,
     });
 
-    render(briefComponent, this.#container, this.#renderPosition);
+    if (prevBriefComponent === null) {
+      render(this.#briefComponent, this.#container, this.#renderPosition);
+      return;
+    }
 
-    this.#renderAddingButton();
-    this.#renderFilter();
+    replace(this.#briefComponent, prevBriefComponent);
+    remove(prevBriefComponent);
   }
 
-  #getDestinationChain() {
-    return 'Moscow - Dublin - Austin';
-  }
+  /**
+   * INFO: Отвечает за действия после изменения модели
+   * Обработчик который передается как колбэк
+   * в модель(и) через addObserver
+   * Он служит для реагирования на изменения модели
+   * По контракту у него должно быть 2 параметра
+   * (второй параметр НЕ обязательный)
+   * @param {TypeChange} type
+   * @param {Event} [payload = null]
+   */
+  #modelEventHandler = () => {
+    this.init();
+  };
 
-  #getTotalDuration() {
-    return 'Mar 18&nbsp;—&nbsp;Apr 20';
-  }
+  // TODO: Реализовать получение цепочки маршрутов
+  #getRouteHandler = () => 'Moscow - Dublin - Austin';
 
-  #getOffersBottomLine() {
-    return '2500';
-  }
+  // TODO: Реализовать получение длительности маршрутов
+  #getDurationHandler = () => 'Mar 18&nbsp;—&nbsp;Apr 20';
+
+  // Реализация получение итоговой стоимости маршрутов и выбранных опций
+  #getBottomLineHandler = () =>
+    this.#eventModel.events?.reduce(
+      (accEvent, curEvent) =>
+        accEvent +
+        curEvent.basePrice +
+        getMappedObjectsByIds(
+          this.#offerModel.getByType(curEvent.type),
+          curEvent.offers
+        )?.reduce((accOption, curOption) => accOption + curOption.price, 0),
+      0
+    );
 }

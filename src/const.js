@@ -63,11 +63,29 @@ const FilterType = {
 };
 
 /**
+ * @enum {string} Текст в маршруте когда нет ни одного события
+ */
+const NoEventText = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.FUTURE]: 'There are no future events now',
+};
+
+/**
  * @enum {string} Режим в котором открыта форма
  */
 const FormMode = {
   EDITING: 'EDITING',
   CREATING: 'CREATING',
+};
+
+/**
+ * @enum {string} Режим приложения
+ */
+const AppMode = {
+  VIEW: 'VIEW',
+  PRODUCTION: 'PRODUCTION',
 };
 
 /** @enum {string} Перечисление возможных режимов карточки события */
@@ -124,4 +142,6 @@ export {
   FormMode,
   UserAction,
   TypeChange,
+  AppMode,
+  NoEventText,
 };

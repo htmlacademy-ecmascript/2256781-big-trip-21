@@ -1,26 +1,56 @@
 import FilterView from '../view/filter-view.js';
-import { render } from '../framework/render.js';
-import { generateFilter } from '../mock/filter.js';
+import { remove, render, replace } from '../framework/render.js';
+import { TypeChange } from '../const.js';
+import { getViewFilters } from '../utils/filter.js';
 
 export default class FilterPresenter {
   #container = null;
+  #filterComponent = null;
+  #filterModel = null;
   #eventModel = null;
 
-  #filterComponent = null;
-
-  #filters = [];
-  #events = [];
-
-  constructor({ container, eventModel }) {
+  constructor({ container, filterModel, eventModel }) {
     this.#container = container;
+    this.#filterModel = filterModel;
     this.#eventModel = eventModel;
+
+    // INFO: Если презентер будет перемещён из BriefPresenter то эти строки понадобятся. Сейчас эти строки дублируют BriefPresenter
+    //this.#filterModel.addObserver(this.#modelEventHandler);
+    //this.#eventModel.addObserver(this.#modelEventHandler);
   }
 
   init() {
-    this.#events = this.#eventModel.events;
-    this.#filters = generateFilter(this.#events);
-    this.#filterComponent = new FilterView({ filters: this.#filters });
+    const prevFilterComponent = this.#filterComponent;
 
-    render(this.#filterComponent, this.#container);
+    this.#filterComponent = new FilterView({
+      filters: getViewFilters(this.#eventModel.events),
+      filter: this.#filterModel.filter,
+      onChange: this.#filterChangeHandler,
+    });
+
+    if (prevFilterComponent === null) {
+      render(this.#filterComponent, this.#container);
+      return;
+    }
+
+    replace(this.#filterComponent, prevFilterComponent);
+    remove(prevFilterComponent);
   }
+
+  destroy() {
+    remove(this.#filterComponent);
+  }
+
+  // INFO: Если презентер будет перемещён из BriefPresenter то эти строки понадобятся. Сейчас эти строки дублируют BriefPresenter
+  // #modelEventHandler = () => {
+  //   this.init();
+  // };
+
+  #filterChangeHandler = (filter) => {
+    if (this.#filterModel.filter === filter) {
+      return;
+    }
+
+    this.#filterModel.update(TypeChange.MAJOR, filter);
+  };
 }

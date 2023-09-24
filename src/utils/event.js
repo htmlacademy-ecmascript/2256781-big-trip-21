@@ -5,6 +5,7 @@ const getDateDiff = (fromDate, toDate, unit = 'ms') =>
   dayjs(toDate).diff(dayjs(fromDate), unit);
 
 /**
+ * Форматирует дату по переданному формату
  * @param {dayjs.ConfigType} date
  * @param {string} typeFormating
  * @returns {string}
@@ -91,6 +92,12 @@ const sortByPrice = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
 const getMappedObjectsByIds = (listItems, ids, key = 'id') =>
   ids.map((id) => listItems.find((item) => item[key] === id));
 
+const isBigDifference = (eventA, eventB) =>
+  eventA.dateFrom !== eventB.dateFrom ||
+  eventA.basePrice !== eventB.basePrice ||
+  getDateDiff(eventA.dateFrom, eventA.dateTo) !==
+    getDateDiff(eventB.dateFrom, eventB.dateTo);
+
 export {
   formatDate,
   getDateDiff,
@@ -105,4 +112,5 @@ export {
   sortByPrice,
   sortByTime,
   getMappedObjectsByIds,
+  isBigDifference,
 };

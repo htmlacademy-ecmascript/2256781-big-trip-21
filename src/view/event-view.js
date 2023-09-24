@@ -49,7 +49,8 @@ export default class EventView extends AbstractView {
     this.#handleRolloutClick();
   };
 
-  #favoriteClickHandler = () => {
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
     this.#handleFavoriteClick();
   };
 }

@@ -17,9 +17,10 @@ const createFilterItemTemplate = (filter, isChecked) => {
 `;
 };
 
-const getFilterTemplate = ({ filters }) => {
+const getFilterTemplate = ({ filters, filter }) => {
+  const filterIndex = filters.findIndex((f) => f.type === filter);
   const filterItemsTemplate = filters
-    .map((filter, index) => createFilterItemTemplate(filter, index === 0))
+    .map((item, index) => createFilterItemTemplate(item, index === filterIndex))
     .join('');
 
   return `

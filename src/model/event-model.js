@@ -21,36 +21,36 @@ export default class EventModel extends Observable {
     return this.#events;
   }
 
-  update(action, event) {
+  update(type, payload) {
     // INFO: связь с сервером
-    const updatedEvent = this.#service.updateEvent(event);
+    const updatedEvent = this.#service.updateEvent(payload);
 
     // INFO: обновляется набор событий полученным объектом
     this.#events = updateListItem(this.#events, updatedEvent);
 
     // INFO: информирование подписчиков о происшедшем событии
-    this._notify(action, updatedEvent);
+    this._notify(type, updatedEvent);
   }
 
-  add(action, event) {
+  add(type, payload) {
     // INFO: связь с сервером
-    const addedEvent = this.#service.addEvent(event);
+    const addedEvent = this.#service.addEvent(payload);
 
     // INFO: обновляется набор событий добавляется объект
     this.#events.push(addedEvent);
 
     // INFO: информирование подписчиков о происшедшем событии
-    this._notify(action, addedEvent);
+    this._notify(type, addedEvent);
   }
 
-  delete(action, event) {
+  delete(type, payload) {
     // INFO: связь с сервером
-    this.#service.deleteEvent(event);
+    this.#service.deleteEvent(payload);
 
     // INFO: обновляется набор событий удаляется объект
-    this.#events = deleteListItem(this.#events, event);
+    this.#events = deleteListItem(this.#events, payload);
 
     // INFO: информирование подписчиков о происшедшем событии
-    this._notify(action);
+    this._notify(type);
   }
 }

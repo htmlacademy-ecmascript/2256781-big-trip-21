@@ -3,10 +3,10 @@ import EventFormView from '../view/form-view.js';
 import { remove, render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
 import { FormMode, EventMode, UserAction, TypeChange } from '../const.js';
-import { getMappedObjectsByIds } from '../utils/event.js';
+import { getMappedObjectsByIds, isBigDifference } from '../utils/event.js';
 
 export default class EventPresenter {
-  #container = null;
+  #eventListContainer = null;
 
   #destinationsModel = null;
   #offersModel = null;
@@ -14,23 +14,25 @@ export default class EventPresenter {
   #eventComponent = null;
   #eventFormComponent = null;
   #event = null;
-  #mode = EventMode.DEFAULT;
+  #mode = null;
 
   #handleDataChange = null;
   #handleModeChange = null;
 
   constructor({
-    container,
+    eventListContainer,
     destinationsModel,
     offersModel,
     onDataChange,
     onModeChange,
   }) {
-    this.#container = container;
+    this.#eventListContainer = eventListContainer;
     this.#destinationsModel = destinationsModel;
     this.#offersModel = offersModel;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
+
+    this.#mode = EventMode.CARD;
   }
 
   init(event) {
@@ -41,27 +43,27 @@ export default class EventPresenter {
 
     this.#eventComponent = new EventView({
       event: this.#event,
-      getDestinationById: this.#getDestinationById,
-      getCheckedOffers: this.#getCheckedOffers,
-      onRolloutClick: this.#rolloutHandler,
-      onFavoriteClick: this.#favoriteHandler,
+      getDestinationById: this.#getDestinationByIdHandler,
+      getCheckedOffers: this.#getCheckedOffersHandler,
+      onRolloutClick: this.#rolloutClickHandler,
+      onFavoriteClick: this.#favoriteClickHandler,
     });
 
     this.#eventFormComponent = new EventFormView({
       event: this.#event,
       formMode: FormMode.EDITING,
-      getAllDestinations: this.#getAllDestinations,
-      getAllOffersByType: this.#getAllOffersByType,
-      getCheckedOffers: this.#getCheckedOffers,
-      getDestinationByName: this.#getDestinationByName,
-      onRollupClick: this.#rollupHandler,
-      onSaveClick: this.#saveHandler,
-      onResetClick: this.#resetHandler,
-      onDeleteClick: this.#deleteHandler,
+      getAllDestinations: this.#getDestinationsHandler,
+      getAllOffersByType: this.#getOffersByTypeHandler,
+      getCheckedOffers: this.#getCheckedOffersHandler,
+      getDestinationByName: this.#getDestinationByNameHandler,
+      onRollupClick: this.#rollupClickHandler,
+      onSaveClick: this.#savingClickHandler,
+      onResetClick: this.#resetClickHandler,
+      onDeleteClick: this.#deleteClickHandler,
     });
 
     if (prevEventComponent === null || prevFormComponent === null) {
-      render(this.#eventComponent, this.#container.element);
+      render(this.#eventComponent, this.#eventListContainer);
       return;
     }
 
@@ -77,26 +79,26 @@ export default class EventPresenter {
     remove(prevFormComponent);
   }
 
-  resetView = () => {
-    if (this.#mode !== EventMode.DEFAULT) {
+  resetView() {
+    if (this.#mode !== EventMode.CARD) {
       this.#eventFormComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
-  };
+  }
 
-  destroy = () => {
+  destroy() {
     remove(this.#eventComponent);
     remove(this.#eventFormComponent);
-  };
+  }
 
-  #rolloutHandler = () => {
+  #rolloutClickHandler = () => {
     this.#replaceCardToForm();
   };
 
   /**
    * Обрабатывает нажатие пользователем на звёздочку
    */
-  #favoriteHandler = () => {
+  #favoriteClickHandler = () => {
     this.#handleDataChange(UserAction.CHANGE, TypeChange.PATCH, {
       ...this.#event,
       isFavorite: !this.#event.isFavorite,
@@ -106,7 +108,7 @@ export default class EventPresenter {
   /**
    * Обрабатывает нажатие пользователем на стрелочку вверх
    */
-  #rollupHandler = () => {
+  #rollupClickHandler = () => {
     this.#eventFormComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
@@ -114,19 +116,22 @@ export default class EventPresenter {
   /**
    * Обрабатывает нажатие пользователем на кнопку Cancel
    */
-  #resetHandler = () => {
+  #resetClickHandler = () => {
     this.#eventFormComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
-  // REVIEW:
-  // применить ф-ию для вычисления типа изменения
   /**
-   * Обрабатывает нажатие пользователем на кнопку Save
+   * Обрабатывает нажатие пользователем на кнопку Save (Submit)
    * @param {Event} event
    */
-  #saveHandler = (event) => {
-    this.#handleDataChange(UserAction.CHANGE, TypeChange.MINOR, event);
+  #savingClickHandler = (event) => {
+    const isMinor = isBigDifference(event, this.#event);
+    this.#handleDataChange(
+      UserAction.CHANGE,
+      isMinor ? TypeChange.MINOR : TypeChange.PATCH,
+      event
+    );
     this.#replaceFormToCard();
   };
 
@@ -134,8 +139,8 @@ export default class EventPresenter {
    * Обрабатывает нажатие пользователем на кнопку Delete
    * @param {*} event
    */
-  #deleteHandler = (event) => {
-    this.#handleDataChange(UserAction.DELETE, TypeChange.MAJOR, event);
+  #deleteClickHandler = (event) => {
+    this.#handleDataChange(UserAction.DELETE, TypeChange.MINOR, event);
     this.#replaceFormToCard();
   };
 
@@ -147,7 +152,7 @@ export default class EventPresenter {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       this.#replaceFormToCard();
-      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      // document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 
@@ -156,26 +161,26 @@ export default class EventPresenter {
    * @param {string} type
    * @returns {Array<Offer>}
    */
-  #getAllOffersByType = (type) => this.#offersModel.getByType(type);
+  #getOffersByTypeHandler = (type) => this.#offersModel.getByType(type);
 
   /**
    * Обработчик передаётся во вьюху EventFormView
    * @returns {Array<Destination>}
    */
-  #getAllDestinations = () => this.#destinationsModel.destinations;
+  #getDestinationsHandler = () => this.#destinationsModel.destinations;
 
   /**
    * Обработчик передаётся во вьюху EventFormView
    * @returns {Destination}
    */
-  #getDestinationById = (id) => this.#destinationsModel.getById(id);
+  #getDestinationByIdHandler = (id) => this.#destinationsModel.getById(id);
 
   /**
    * Обработчик передаётся во вьюху EventFormView
    * @param {String} name
    * @returns {Destination}
    */
-  #getDestinationByName = (name) => this.#destinationsModel.getByName(name);
+  #getDestinationByNameHandler = (name) => this.#destinationsModel.getByName(name);
 
   /**
    * Маппит по типу и по переданным ids объекты offer
@@ -183,7 +188,7 @@ export default class EventPresenter {
    * @param {string} type Тип события
    * @param {Array<number>} checkedOfferIds Массив выделенных предложений (вернее их ids)
    */
-  #getCheckedOffers = (type, checkedOfferIds) => {
+  #getCheckedOffersHandler = (type, checkedOfferIds) => {
     const offersByType = this.#offersModel.getByType(type);
     return getMappedObjectsByIds(offersByType, checkedOfferIds);
   };
@@ -191,13 +196,13 @@ export default class EventPresenter {
   #replaceFormToCard() {
     replace(this.#eventComponent, this.#eventFormComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = EventMode.DEFAULT;
+    this.#mode = EventMode.CARD;
   }
 
   #replaceCardToForm() {
     this.#handleModeChange();
     replace(this.#eventFormComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = EventMode.EDITING;
+    this.#mode = EventMode.FORM;
   }
 }
