@@ -1,18 +1,18 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getFormTemplate } from '../template/form-template.js';
-import { BLANK_POINT } from '../utils/event.js';
+import { BLANK_POINT, parseDateForm } from '../utils/event.js';
 import { FormMode } from '../const.js';
 
 export default class EventFormView extends AbstractStatefulView {
-  #handlerSaveClick = null;
-  #handlerResetClick = null;
-  #handlerRollupClick = null;
-  #handlerDeleteClick = null;
+  #handleSaveClick = null;
+  #handleResetClick = null;
+  #handleRollupClick = null;
+  #handleDeleteClick = null;
 
-  #handlerGetAllDestinations = null;
-  #handlerGetAllOffersByType = null;
-  #handlerGetCheckedOffers = null;
-  #handlerGetDestinationByName = null;
+  #handleGetAllDestinations = null;
+  #handleGetAllOffersByType = null;
+  #handleGetCheckedOffers = null;
+  #handleGetDestinationByName = null;
 
   #formMode = undefined;
 
@@ -32,32 +32,33 @@ export default class EventFormView extends AbstractStatefulView {
 
     this._setState(EventFormView.parseEventToState({ event }));
 
-    this.#handlerSaveClick = onSaveClick;
-    this.#handlerRollupClick = onRollupClick;
-    this.#handlerResetClick = onResetClick;
-    this.#handlerDeleteClick = onDeleteClick;
-    this.#handlerGetAllDestinations = getAllDestinations;
-    this.#handlerGetAllOffersByType = getAllOffersByType;
-    this.#handlerGetCheckedOffers = getCheckedOffers;
-    this.#handlerGetDestinationByName = getDestinationByName;
+    this.#handleSaveClick = onSaveClick;
+    this.#handleRollupClick = onRollupClick;
+    this.#handleResetClick = onResetClick;
+    this.#handleDeleteClick = onDeleteClick;
+    this.#handleGetAllDestinations = getAllDestinations;
+    this.#handleGetAllOffersByType = getAllOffersByType;
+    this.#handleGetCheckedOffers = getCheckedOffers;
+    this.#handleGetDestinationByName = getDestinationByName;
 
     this.#formMode = formMode;
-
     this._restoreHandlers();
   }
 
   _restoreHandlers() {
     const isEditing = this.#formMode === FormMode.EDITING;
-    const cbReset = this.#resetHandler;
-    const cbDelete = this.#deleteHandler;
+    const cbReset = this.#buttonResetHandler;
+    const cbDelete = this.#buttonDeleteHandler;
 
     this.element
       .querySelector('form')
-      .addEventListener('submit', this.#saveHandler);
+      .addEventListener('submit', this.#buttonSaveHandler);
 
-    this.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#rollupHandler);
+    if (isEditing) {
+      this.element
+        .querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#buttonRollupHandler);
+    }
 
     this.element
       .querySelector('.event__reset-btn')
@@ -66,40 +67,40 @@ export default class EventFormView extends AbstractStatefulView {
     this.element
       .querySelectorAll('.event__type-input')
       .forEach((input) =>
-        input.addEventListener('change', this.#changeTypeHandler)
+        input.addEventListener('change', this.#typeChangeHandler)
       );
 
     this.element
       .querySelector('.event__input--destination')
-      .addEventListener('change', this.#changeDestinationHandler);
+      .addEventListener('change', this.#destinationChangeHandler);
 
     this.element
       .querySelector('.event__input--price')
-      .addEventListener('input', this.#changePriceHandler);
+      .addEventListener('input', this.#priceChangeHandler);
 
     this.element
       .querySelectorAll('.event__offer-checkbox')
       .forEach((offer) =>
-        offer.addEventListener('change', this.#changeOfferHandler)
+        offer.addEventListener('change', this.#offerChangeHandler)
       );
 
     this.element
       .querySelectorAll('.event__input--time')
       .forEach((date) =>
-        date.addEventListener('change', this.#changeDateHandler)
+        date.addEventListener('change', this.#dateChangeHandler)
       );
   }
 
   get template() {
     const event = this._state.event;
     const destinationId = event.destination;
-    const destinations = this.#handlerGetAllDestinations();
+    const destinations = this.#handleGetAllDestinations();
     const destination = destinations.find((item) => item.id === destinationId);
-    const checkedOffers = this.#handlerGetCheckedOffers(
+    const checkedOffers = this.#handleGetCheckedOffers(
       event.type,
       event.offers
     );
-    const allOffersByType = this.#handlerGetAllOffersByType(event.type);
+    const allOffersByType = this.#handleGetAllOffersByType(event.type);
     const formMode = this.#formMode;
 
     return getFormTemplate({
@@ -116,28 +117,26 @@ export default class EventFormView extends AbstractStatefulView {
    *
    * @param {Event} evt
    */
-  #saveHandler = (evt) => {
+  #buttonSaveHandler = (evt) => {
     evt.preventDefault();
-
     const event = EventFormView.parseStateToEvent(this._state);
-
-    this.#handlerSaveClick(event);
+    this.#handleSaveClick(event);
   };
 
   /**
    *
    * @param {Event} evt
    */
-  #rollupHandler = (evt) => {
+  #buttonRollupHandler = (evt) => {
     evt.preventDefault();
-    this.#handlerRollupClick();
+    this.#handleRollupClick();
   };
 
   /**
    *
    * @param {Event} evt
    */
-  #changeTypeHandler = (evt) => {
+  #typeChangeHandler = (evt) => {
     evt.preventDefault();
 
     this.updateElement({
@@ -153,31 +152,31 @@ export default class EventFormView extends AbstractStatefulView {
    *
    * @param {Event} evt
    */
-  #changeDestinationHandler = (evt) => {
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
 
     this.updateElement({
       event: {
         ...this._state.event,
-        destination: this.#handlerGetDestinationByName(evt.target.value)?.id,
+        destination: this.#handleGetDestinationByName(evt.target.value)?.id,
       },
     });
   };
 
-  #resetHandler = (evt) => {
+  #buttonResetHandler = (evt) => {
     evt.preventDefault();
-    this.#handlerResetClick();
+    this.#handleResetClick();
   };
 
-  #deleteHandler = (evt) => {
+  #buttonDeleteHandler = (evt) => {
     const event = EventFormView.parseStateToEvent(this._state);
 
     evt.preventDefault();
 
-    this.#handlerDeleteClick(event);
+    this.#handleDeleteClick(event);
   };
 
-  #changePriceHandler = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
     const event = this._state.event;
@@ -191,7 +190,7 @@ export default class EventFormView extends AbstractStatefulView {
     });
   };
 
-  #changeOfferHandler = (evt) => {
+  #offerChangeHandler = (evt) => {
     evt.preventDefault();
 
     const id = +evt.target.dataset.id;
@@ -209,8 +208,24 @@ export default class EventFormView extends AbstractStatefulView {
     });
   };
 
-  #changeDateHandler = (evt) => {
+  #dateChangeHandler = (evt) => {
     evt.preventDefault();
+
+    if (evt.target.name === 'event-start-time') {
+      this._setState({
+        event: {
+          ...this._state.event,
+          dateFrom: parseDateForm(evt.target.value),
+        },
+      });
+    } else {
+      this._setState({
+        event: {
+          ...this._state.event,
+          dateTo: parseDateForm(evt.target.value),
+        },
+      });
+    }
   };
 
   reset(event) {

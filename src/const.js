@@ -3,7 +3,7 @@
  * в борду
  * @type {string}
  */
-const EVENT_COUNT = 2;
+const EVENT_COUNT = 3;
 
 /** @enum {string} Перечисление возможных типов событий */
 const TYPE_EVENTS = [
@@ -63,11 +63,21 @@ const FilterType = {
 };
 
 /**
+ * @enum {string} Текст в маршруте когда нет ни одного события
+ */
+const NoEventText = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.PAST]: 'There are no past events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.FUTURE]: 'There are no future events now',
+};
+
+/**
  * @enum {string} Режим в котором открыта форма
  */
 const FormMode = {
   EDITING: 'EDITING',
-  CREATING: 'CREATING'
+  CREATING: 'CREATING',
 };
 
 /** @enum {string} Перечисление возможных режимов карточки события */
@@ -76,10 +86,20 @@ const EventMode = {
   FORM: 'FORM',
 };
 
-/** @enum {string} Перечисление возможных режимов изменения события*/
-const TypeChange = {
+/** @enum {string} Перечисление возможных действия пользователя с событием */
+const UserAction = {
   DELETE: 'DELETE',
   CHANGE: 'CHANGE',
+  ADD: 'ADD',
+};
+
+/** @enum {string} Перечисление возможных типов перерисовки интерфейса */
+const TypeChange = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+  ADDING: 'ADDING',
+  REJECTION: 'REJECTION',
 };
 
 /** @enum {string} Перечисление возможных сортировок */
@@ -114,5 +134,7 @@ export {
   SortType,
   enableSortType,
   FormMode,
+  UserAction,
   TypeChange,
+  NoEventText,
 };

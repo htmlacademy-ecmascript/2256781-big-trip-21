@@ -2,22 +2,22 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { getBriefTemplate } from '../template/brief-template.js';
 
 export default class BriefView extends AbstractView {
-  #destinationChain = '<empty>';
-  #duration = '... - ...';
-  #bottomLine = 0;
+  #handleRouteGetting = '<empty>';
+  #handleDurationGetting = '... - ...';
+  #handleTotalGetting = 0;
 
-  constructor({ destinationChain, duration, bottomLine }) {
+  constructor({ getRoute, getDuration, getTotal }) {
     super();
-    this.#destinationChain = destinationChain;
-    this.#duration = duration;
-    this.#bottomLine = bottomLine;
+    this.#handleRouteGetting = getRoute;
+    this.#handleDurationGetting = getDuration;
+    this.#handleTotalGetting = getTotal;
   }
 
   get template() {
     return getBriefTemplate({
-      destinationChain: this.#destinationChain,
-      duration: this.#duration,
-      bottomLine: this.#bottomLine,
+      destinationChain: this.#handleRouteGetting(),
+      duration: this.#handleDurationGetting(),
+      bottomLine: this.#handleTotalGetting(),
     });
   }
 }

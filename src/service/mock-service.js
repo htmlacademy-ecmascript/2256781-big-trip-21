@@ -28,4 +28,16 @@ export default class MockService {
   #generateEvents() {
     return Array.from({ length: EVENT_COUNT }, () => generateEvent());
   }
+
+  updateEvent(event) {
+    return event;
+  }
+
+  addEvent(data) {
+    return { ...data, id: crypto.randomUUID() };
+  }
+
+  deleteEvent() {
+    // ...
+  }
 }
