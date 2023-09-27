@@ -3,7 +3,7 @@
  * в борду
  * @type {string}
  */
-const EVENT_COUNT = 2;
+const EVENT_COUNT = 3;
 
 /** @enum {string} Перечисление возможных типов событий */
 const TYPE_EVENTS = [
@@ -80,14 +80,6 @@ const FormMode = {
   CREATING: 'CREATING',
 };
 
-/**
- * @enum {string} Режим приложения
- */
-const AppMode = {
-  VIEW: 'VIEW',
-  PRODUCTION: 'PRODUCTION',
-};
-
 /** @enum {string} Перечисление возможных режимов карточки события */
 const EventMode = {
   CARD: 'CARD',
@@ -106,6 +98,8 @@ const TypeChange = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  ADDING: 'ADDING',
+  REJECTION: 'REJECTION',
 };
 
 /** @enum {string} Перечисление возможных сортировок */
@@ -142,6 +136,5 @@ export {
   FormMode,
   UserAction,
   TypeChange,
-  AppMode,
   NoEventText,
 };

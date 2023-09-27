@@ -1,5 +1,13 @@
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { getRandomInteger } from './common';
+import { CALENDAR_FORMAT } from '../const';
+
+dayjs.extend(utc);
+dayjs.extend(customParseFormat);
+
+const parseDateForm = (dateString) => dayjs.utc(dateString, CALENDAR_FORMAT).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 
 const getDateDiff = (fromDate, toDate, unit = 'ms') =>
   dayjs(toDate).diff(dayjs(fromDate), unit);
@@ -53,7 +61,7 @@ const BLANK_POINT = {
   destination: '',
   isFavorite: false,
   offers: [],
-  type: '',
+  type: 'taxi',
 };
 
 const BLANK_DESTINATION = {
@@ -113,4 +121,5 @@ export {
   sortByTime,
   getMappedObjectsByIds,
   isBigDifference,
+  parseDateForm,
 };

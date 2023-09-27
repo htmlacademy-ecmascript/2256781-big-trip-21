@@ -3,10 +3,12 @@ import { remove, render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import MessageView from '../view/message-view.js';
 import { getSortDescription } from '../mock/sort.js';
-import { AppMode, SortType, TypeChange, UserAction } from '../const.js';
+import { SortType, TypeChange, UserAction } from '../const.js';
 import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
 import { filter } from '../utils/filter.js';
+import CreatingPresenter from './creating-presenter.js';
+import { getMappedObjectsByIds } from '../utils/event.js';
 
 export default class RoutePresenter {
   #container = null;
@@ -15,13 +17,14 @@ export default class RoutePresenter {
   #offersModel = null;
   #eventModel = null;
   #filterModel = null;
-  #addModel = null;
+  #addingModel = null;
 
   #eventListComponent = new ListView();
   #sortComponent = null;
   #noEventComponent = null;
 
   #eventPresenters = new Map();
+  #creatingPresenter = null;
 
   #currentSortType = SortType.DAY;
 
@@ -31,17 +34,27 @@ export default class RoutePresenter {
     offerModel,
     eventModel,
     filterModel,
-    addModel,
+    addingModel,
   }) {
     this.#container = container;
     this.#destinationsModel = destinationModel;
     this.#offersModel = offerModel;
     this.#eventModel = eventModel;
     this.#filterModel = filterModel;
-    this.#addModel = addModel;
+    this.#addingModel = addingModel;
 
-    this.#eventModel.addObserver(this.#modelEventHandler);
-    this.#filterModel.addObserver(this.#modelEventHandler);
+    this.#creatingPresenter = new CreatingPresenter({
+      eventListContainer: this.#eventListComponent.element,
+      onDataChange: this.#dataChangeHandler,
+      onDestroy: this.#creatingFormDestroyHandler,
+      getAllDestinations: this.#getDestinationsHandler,
+      getAllOffersByType: this.#getOffersByTypeHandler,
+      getDestinationByName: this.#getDestinationByNameHandler,
+    });
+
+    this.#eventModel.addObserver(this.#changingModelsHandler);
+    this.#addingModel.addObserver(this.#changingModelsHandler);
+    this.#filterModel.addObserver(this.#changingModelsHandler);
   }
 
   init() {
@@ -58,10 +71,13 @@ export default class RoutePresenter {
   #renderEvent(event) {
     const eventPresenter = new EventPresenter({
       eventListContainer: this.#eventListComponent.element,
-      destinationsModel: this.#destinationsModel,
-      offersModel: this.#offersModel,
       onDataChange: this.#dataChangeHandler,
       onModeChange: this.#modeChangeHandler,
+      getAllDestinations: this.#getDestinationsHandler,
+      getAllOffersByType: this.#getOffersByTypeHandler,
+      getDestinationByName: this.#getDestinationByNameHandler,
+      getCheckedOffers: this.#getCheckedOffersHandler,
+      getDestinationById: this.#getDestinationByIdHandler,
     });
 
     eventPresenter.init(event);
@@ -110,9 +126,14 @@ export default class RoutePresenter {
 
   #clearBoard = ({ resetSortType = false } = {}) => {
     this.#clearEvents();
-    remove(this.#noEventComponent);
+
     remove(this.#sortComponent);
     this.#sortComponent = null;
+
+    if (this.#noEventComponent) {
+      remove(this.#noEventComponent);
+      this.#noEventComponent = null;
+    }
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
@@ -145,7 +166,7 @@ export default class RoutePresenter {
       case UserAction.ADD:
         this.#eventModel.add(updateType, update);
         break;
-      default:
+      case UserAction.CHANGE:
         this.#eventModel.update(updateType, update);
         break;
     }
@@ -161,7 +182,8 @@ export default class RoutePresenter {
   };
 
   #modeChangeHandler = () => {
-    // this.#eventPresenters.forEach((presenter) => presenter.resetView());
+    this.#creatingPresenter.destroy();
+    this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
   /**
@@ -174,7 +196,7 @@ export default class RoutePresenter {
    * @param {TypeChange} type
    * @param {Event} [payload = null]
    */
-  #modelEventHandler = (type = TypeChange.PATCH, payload = null) => {
+  #changingModelsHandler = (type = TypeChange.PATCH, payload = null) => {
     switch (type) {
       case TypeChange.MINOR:
         this.#clearBoard();
@@ -184,17 +206,71 @@ export default class RoutePresenter {
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
-      default:
+      case TypeChange.PATCH:
         this.#eventPresenters?.get(payload.id)?.init(payload);
+        break;
+      case TypeChange.ADDING:
+        this.#clearBoard();
+        this.#prepareAddingEvent();
+        this.#renderBoard();
+        break;
+      case TypeChange.REJECTION:
+        this.#clearBoard();
+        this.#renderBoard();
         break;
     }
   };
 
+  #prepareAddingEvent = () => {
+    this.#creatingPresenter.init();
+  };
+
   #isNoPoints() {
-    // return (
-    //   this.events.length === 0 &&
-    //   !this.#addModel.appModel === AppMode.PRODUCTION
-    // );
-    return this.events.length === 0;
+    return this.events.length === 0 && !this.#addingModel.isPressed;
   }
+
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @param {string} type
+   * @returns {Array<Offer>}
+   */
+  #getOffersByTypeHandler = (type) => this.#offersModel.getByType(type);
+
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @returns {Array<Destination>}
+   */
+  #getDestinationsHandler = () => this.#destinationsModel.destinations;
+
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @returns {Destination}
+   */
+  #getDestinationByIdHandler = (id) => this.#destinationsModel.getById(id);
+
+  /**
+   * Обработчик передаётся во вьюху EventFormView
+   * @param {String} name
+   * @returns {Destination}
+   */
+  #getDestinationByNameHandler = (name) =>
+    this.#destinationsModel.getByName(name);
+
+  /**
+   * Маппит по типу и по переданным ids объекты offer
+   * Обработчик передаётся во вьюхи EventFormView, EventView
+   * @param {string} type Тип события
+   * @param {Array<number>} checkedOfferIds Массив выделенных предложений (вернее их ids)
+   */
+  #getCheckedOffersHandler = (type, checkedOfferIds) => {
+    const offersByType = this.#offersModel.getByType(type);
+    return getMappedObjectsByIds(offersByType, checkedOfferIds);
+  };
+
+  #creatingFormDestroyHandler = () => {
+    this.#addingModel.update(
+      TypeChange.REJECTION,
+      !this.#addingModel.isPressed
+    );
+  };
 }

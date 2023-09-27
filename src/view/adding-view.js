@@ -1,7 +1,7 @@
 import { getAddButtonTemplate } from '../template/adding-template.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-export default class AddButtonView extends AbstractView {
+export default class AddingView extends AbstractView {
   #handleClick = null;
 
   constructor({ onClick }) {

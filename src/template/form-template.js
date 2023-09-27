@@ -1,4 +1,4 @@
-import { CALENDAR_FORMAT, TYPE_EVENTS, FormMode } from '../const.js';
+import { TYPE_EVENTS, FormMode, CALENDAR_FORMAT } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/event.js';
 
@@ -86,7 +86,7 @@ const getFormTemplate = ({
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
         <button class="event__reset-btn" type="reset">${isEditingMode ? 'Delete' : 'Cancel'}</button>
-        <button class="event__rollup-btn" type="button">
+        ${isEditingMode ? '<button class="event__rollup-btn" type="button">' : ''}
         <span class="visually-hidden">Open event</span>
         </button>
       </header>

@@ -6,6 +6,7 @@ import EventModel from './model/event-model.js';
 import MockService from './service/mock-service.js';
 import BriefPresenter from './presenter/brief-presenter.js';
 import FilterModel from './model/filter-model.js';
+import AddingModel from './model/adding-model.js';
 
 const boxTripMainElement = document.querySelector('.trip-main');
 const boxTripEventElement = document.querySelector('.trip-events');
@@ -15,6 +16,7 @@ const destinationModel = new DestinationModel(mockService);
 const offerModel = new OfferModel(mockService);
 const eventModel = new EventModel(mockService);
 const filterModel = new FilterModel();
+const addingModel = new AddingModel();
 
 const briefPresenter = new BriefPresenter({
   container: boxTripMainElement,
@@ -23,6 +25,7 @@ const briefPresenter = new BriefPresenter({
   offerModel,
   eventModel,
   filterModel,
+  addingModel,
 });
 
 const routePresenter = new RoutePresenter({
@@ -31,6 +34,7 @@ const routePresenter = new RoutePresenter({
   offerModel,
   eventModel,
   filterModel,
+  addingModel,
 });
 
 briefPresenter.init();

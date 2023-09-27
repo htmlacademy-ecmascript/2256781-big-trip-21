@@ -1,18 +1,20 @@
 import BriefView from '../view/brief-view.js';
 import { remove, render, replace } from '../framework/render.js';
-import AddPresenter from './add-presenter.js';
+import AddingPresenter from './adding-presenter.js';
 import FilterPresenter from './filter-presenter.js';
 import { getMappedObjectsByIds } from '../utils/event.js';
+import { FilterType, TypeChange } from '../const.js';
 
 export default class BriefPresenter {
   #container = null;
   #eventModel = null;
   #destinationModel = null;
+  #addingModel = null;
   #offerModel = null;
   #filterModel = null;
   #renderPosition = undefined;
 
-  #addPresenter = null;
+  #addingPresenter = null;
   #filterPresenter = null;
 
   #briefComponent = null;
@@ -23,17 +25,22 @@ export default class BriefPresenter {
     destinationModel,
     offerModel,
     filterModel,
+    addingModel,
     renderPosition,
   }) {
     this.#container = container;
+
     this.#eventModel = eventModel;
     this.#destinationModel = destinationModel;
     this.#offerModel = offerModel;
     this.#filterModel = filterModel;
+    this.#addingModel = addingModel;
+
     this.#renderPosition = renderPosition;
 
-    this.#eventModel.addObserver(this.#modelEventHandler);
-    this.#filterModel.addObserver(this.#modelEventHandler);
+    this.#eventModel.addObserver(this.#changingModelsHandler);
+    this.#filterModel.addObserver(this.#changingModelsHandler);
+    this.#addingModel.addObserver(this.#changingModelsHandler);
   }
 
   init() {
@@ -60,15 +67,19 @@ export default class BriefPresenter {
   }
 
   #renderAddButton() {
-    const prevAddPresenter = this.#addPresenter;
+    const prevAddingPresenter = this.#addingPresenter;
 
-    this.#addPresenter = new AddPresenter({ container: this.#container });
+    this.#addingPresenter = new AddingPresenter({
+      container: this.#container,
+      onButtonClick: this.#addingClickHandler,
+      addingModel: this.#addingModel,
+    });
 
-    if (prevAddPresenter) {
-      prevAddPresenter.destroy();
+    if (prevAddingPresenter) {
+      prevAddingPresenter.destroy();
     }
 
-    this.#addPresenter.init();
+    this.#addingPresenter.init();
   }
 
   #renderBrief() {
@@ -99,8 +110,17 @@ export default class BriefPresenter {
    * @param {TypeChange} type
    * @param {Event} [payload = null]
    */
-  #modelEventHandler = () => {
+  #changingModelsHandler = (type) => {
+    if (type === TypeChange.ADDING) {
+      this.#filterModel.update(TypeChange.MAJOR, FilterType.EVERYTHING);
+      return;
+    }
+
     this.init();
+  };
+
+  #addingClickHandler = () => {
+    this.#addingModel.update(TypeChange.ADDING, !this.#addingModel.isPressed);
   };
 
   // TODO: Реализовать получение цепочки маршрутов
@@ -110,15 +130,31 @@ export default class BriefPresenter {
   #getDurationHandler = () => 'Mar 18&nbsp;—&nbsp;Apr 20';
 
   // Реализация получение итоговой стоимости маршрутов и выбранных опций
-  #getBottomLineHandler = () =>
-    this.#eventModel.events?.reduce(
-      (accEvent, curEvent) =>
-        accEvent +
-        curEvent.basePrice +
-        getMappedObjectsByIds(
-          this.#offerModel.getByType(curEvent.type),
-          curEvent.offers
-        )?.reduce((accOption, curOption) => accOption + curOption.price, 0),
+  #getBottomLineHandler = () => {
+    if (this.#eventModel.events?.length === 0) {
+      return 0;
+    }
+
+    const basePriceTotal = this.#eventModel.events?.reduce(
+      (acc, curEvent) => acc + Number(curEvent.basePrice),
       0
     );
+
+    const optionPrices = this.#eventModel.events?.map((curItem) => {
+      const offers = getMappedObjectsByIds(
+        this.#offerModel.getByType(curItem.type),
+        curItem.offers
+      );
+
+      return offers
+        .map((curOption) => curOption.price)
+        .reduce((accumulator, current) => accumulator + current, 0);
+    });
+
+    const optionPriceTotal = optionPrices?.reduce(
+      (accTotal, curTotal) => accTotal + curTotal
+    );
+
+    return basePriceTotal + optionPriceTotal;
+  };
 }

@@ -17,7 +17,7 @@ const getEventOfferTemplate = ({ title, price }) => `
 
 const getEventTemplate = ({ event, destination, checkedOffers = [] }) => {
   const { basePrice, dateFrom, dateTo, isFavorite, type} = event;
-  const { name: destinationName } = destination;
+  const { name: destinationName } = destination || {};
 
   return `
   <li class="trip-events__item">
