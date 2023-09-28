@@ -3,7 +3,7 @@
  * в борду
  * @type {string}
  */
-const EVENT_COUNT = 3;
+const EVENT_COUNT = 1;
 
 /** @enum {string} Перечисление возможных типов событий */
 const TYPE_EVENTS = [

@@ -2,6 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getFormTemplate } from '../template/form-template.js';
 import { BLANK_POINT, parseDateForm } from '../utils/event.js';
 import { FormMode } from '../const.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 export default class EventFormView extends AbstractStatefulView {
   #handleSaveClick = null;
@@ -15,6 +17,7 @@ export default class EventFormView extends AbstractStatefulView {
   #handleGetDestinationByName = null;
 
   #formMode = undefined;
+  #datepickers = null;
 
   constructor({
     event = BLANK_POINT,
@@ -89,6 +92,8 @@ export default class EventFormView extends AbstractStatefulView {
       .forEach((date) =>
         date.addEventListener('change', this.#dateChangeHandler)
       );
+
+    this.#setDatepicker();
   }
 
   get template() {
@@ -230,6 +235,26 @@ export default class EventFormView extends AbstractStatefulView {
 
   reset(event) {
     this.updateElement({ event });
+  }
+
+  #setDatepicker() {
+    const dateInputs = this.element.querySelectorAll('.event__input--time');
+
+    this.#datepickers = [...dateInputs].map((input, id) => {
+      const minDate = id ? dateInputs[0].value : null;
+      return flatpickr(input, {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        'time_24hr': true,
+        minDate,
+        allowInput: true,
+      });
+    });
+  }
+
+  removeElement() {
+    super.removeElement();
+    this.#datepickers.forEach((datepicker) => datepicker.destroy());
   }
 
   static parseEventToState = ({ event }) => ({ event });
