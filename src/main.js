@@ -3,40 +3,56 @@ import RoutePresenter from './presenter/route-presenter.js';
 import DestinationModel from './model/destination-model.js';
 import OfferModel from './model/offer-model.js';
 import EventModel from './model/event-model.js';
-import MockService from './service/mock-service.js';
+import ProductionService from './service/production-service.js';
 import BriefPresenter from './presenter/brief-presenter.js';
 import FilterModel from './model/filter-model.js';
 import AddingModel from './model/adding-model.js';
+import { getCredential } from './const.js';
 
 const boxTripMainElement = document.querySelector('.trip-main');
 const boxTripEventElement = document.querySelector('.trip-events');
 
-const mockService = new MockService();
-const destinationModel = new DestinationModel(mockService);
-const offerModel = new OfferModel(mockService);
-const eventModel = new EventModel(mockService);
-const filterModel = new FilterModel();
-const addingModel = new AddingModel();
+const main = async () => {
+  const credential = getCredential();
+  const productionService = new ProductionService(
+    credential.END_POINT,
+    credential.AUTHORIZATION
+  );
+  const destinationModel = new DestinationModel(productionService);
+  const offerModel = new OfferModel(productionService);
+  const eventModel = new EventModel({
+    service: productionService,
+    destinationModel,
+    offerModel,
+  });
 
-const briefPresenter = new BriefPresenter({
-  container: boxTripMainElement,
-  renderPosition: RenderPosition.AFTERBEGIN,
-  destinationModel,
-  offerModel,
-  eventModel,
-  filterModel,
-  addingModel,
-});
+  // await eventModel.init();
 
-const routePresenter = new RoutePresenter({
-  container: boxTripEventElement,
-  destinationModel,
-  offerModel,
-  eventModel,
-  filterModel,
-  addingModel,
-});
+  const filterModel = new FilterModel();
+  const addingModel = new AddingModel();
 
-briefPresenter.init();
+  const briefPresenter = new BriefPresenter({
+    container: boxTripMainElement,
+    renderPosition: RenderPosition.AFTERBEGIN,
+    destinationModel,
+    offerModel,
+    eventModel,
+    filterModel,
+    addingModel,
+  });
 
-routePresenter.init();
+  const routePresenter = new RoutePresenter({
+    container: boxTripEventElement,
+    destinationModel,
+    offerModel,
+    eventModel,
+    filterModel,
+    addingModel,
+  });
+
+  routePresenter.init();
+  briefPresenter.init();
+  eventModel.init();
+};
+
+main();

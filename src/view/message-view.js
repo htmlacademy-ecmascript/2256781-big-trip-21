@@ -1,15 +1,15 @@
-import { getEmptyListTemplate } from '../template/empty-list-template.js';
+import { getMessageTemplate } from '../template/message-template.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 export default class MessageView extends AbstractView {
-  #filter = null;
+  #message = null;
 
-  constructor({ filter }) {
+  constructor({ message }) {
     super();
-    this.#filter = filter;
+    this.#message = message;
   }
 
   get template() {
-    return getEmptyListTemplate({ filter: this.#filter });
+    return getMessageTemplate({ message: this.#message });
   }
 }

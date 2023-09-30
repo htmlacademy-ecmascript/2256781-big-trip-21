@@ -1,14 +1,20 @@
 import ListView from '../view/list-view.js';
-import { remove, render, replace } from '../framework/render.js';
+import {
+  remove,
+  render,
+  replace,
+  RenderPosition,
+} from '../framework/render.js';
 import SortView from '../view/sort-view.js';
+import { enableSortType } from '../const.js';
 import MessageView from '../view/message-view.js';
-import { getSortDescription } from '../mock/sort.js';
-import { SortType, TypeChange, UserAction } from '../const.js';
+import { SortType, TypeOfChange, UserAction } from '../const.js';
 import { sort } from '../utils/sort.js';
 import EventPresenter from './event-presenter.js';
 import { filter } from '../utils/filter.js';
 import CreatingPresenter from './creating-presenter.js';
 import { getMappedObjectsByIds } from '../utils/event.js';
+import { NoEventText } from '../const.js';
 
 export default class RoutePresenter {
   #container = null;
@@ -21,12 +27,13 @@ export default class RoutePresenter {
 
   #eventListComponent = new ListView();
   #sortComponent = null;
-  #noEventComponent = null;
-
+  #messageComponent = null;
   #eventPresenters = new Map();
   #creatingPresenter = null;
 
   #currentSortType = SortType.DAY;
+
+  #isLoading = true;
 
   constructor({
     container,
@@ -57,7 +64,7 @@ export default class RoutePresenter {
     this.#filterModel.addObserver(this.#changingModelsHandler);
   }
 
-  init() {
+  async init() {
     this.#renderBoard();
   }
 
@@ -88,7 +95,7 @@ export default class RoutePresenter {
   #renderSort() {
     const prevSortComponent = this.#sortComponent;
 
-    const sortingDescription = getSortDescription(this.#currentSortType);
+    const sortingDescription = this.#getSortDescription(this.#currentSortType);
 
     this.#sortComponent = new SortView({
       sorts: sortingDescription,
@@ -99,14 +106,25 @@ export default class RoutePresenter {
       replace(this.#sortComponent, prevSortComponent);
       remove(prevSortComponent);
     } else {
-      render(this.#sortComponent, this.#container);
+      render(this.#sortComponent, this.#container, RenderPosition.AFTERBEGIN);
     }
   }
 
   #renderBoard() {
-    if (this.#isNoPoints()) {
+    render(this.#eventListComponent, this.#container);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    if (this.#eventModel.events === 0) {
       this.#renderNoEvents();
       return;
+    }
+
+    if (this.#messageComponent !== null) {
+      remove(this.#messageComponent);
     }
 
     this.#renderSort();
@@ -114,8 +132,6 @@ export default class RoutePresenter {
   }
 
   #renderEvents() {
-    render(this.#eventListComponent, this.#container);
-
     this.events.forEach((event) => this.#renderEvent(event));
   }
 
@@ -130,9 +146,9 @@ export default class RoutePresenter {
     remove(this.#sortComponent);
     this.#sortComponent = null;
 
-    if (this.#noEventComponent) {
-      remove(this.#noEventComponent);
-      this.#noEventComponent = null;
+    if (this.#messageComponent) {
+      remove(this.#messageComponent);
+      this.#messageComponent = null;
     }
 
     if (resetSortType) {
@@ -140,11 +156,31 @@ export default class RoutePresenter {
     }
   };
 
+  #createMessageComponent(message) {
+    if (this.#messageComponent !== null) {
+      remove(this.#messageComponent);
+    }
+
+    this.#messageComponent = new MessageView({ message });
+    render(this.#messageComponent, this.#container);
+  }
+
   #renderNoEvents() {
-    this.#noEventComponent = new MessageView({
-      filter: this.#filterModel.filter,
-    });
-    render(this.#noEventComponent, this.#container);
+    const message = NoEventText[this.#filterModel.filter];
+    this.#createMessageComponent(message);
+  }
+
+  #renderError({ isError, message }) {
+    if (!isError) {
+      return;
+    }
+
+    this.#createMessageComponent(message);
+  }
+
+  #renderLoading() {
+    const message = 'Loading...';
+    this.#createMessageComponent(message);
   }
 
   /**
@@ -155,7 +191,7 @@ export default class RoutePresenter {
    * нужно сделать то или иное действие
    * с данными через модель
    * @param {UserAction} action
-   * @param {TypeChange} updateType
+   * @param {TypeOfChange} updateType
    * @param {Event} update
    */
   #dataChangeHandler = (action = UserAction.CHANGE, updateType, update) => {
@@ -183,6 +219,11 @@ export default class RoutePresenter {
 
   #modeChangeHandler = () => {
     this.#creatingPresenter.destroy();
+
+    if (this.#eventModel.length === 0) {
+      this.#renderNoEvents();
+    }
+
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -193,30 +234,40 @@ export default class RoutePresenter {
    * Он служит для реагирования на изменения модели
    * По контракту у него должно быть 2 параметра
    * (второй параметр НЕ обязательный)
-   * @param {TypeChange} type
+   * @param {TypeOfChange} type
    * @param {Event} [payload = null]
    */
-  #changingModelsHandler = (type = TypeChange.PATCH, payload = null) => {
+  #changingModelsHandler = (type = TypeOfChange.PATCH, payload = null) => {
     switch (type) {
-      case TypeChange.MINOR:
+      case TypeOfChange.MINOR:
         this.#clearBoard();
         this.#renderBoard();
         break;
-      case TypeChange.MAJOR:
+      case TypeOfChange.MAJOR:
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
-      case TypeChange.PATCH:
+      case TypeOfChange.PATCH:
         this.#eventPresenters?.get(payload.id)?.init(payload);
         break;
-      case TypeChange.ADDING:
+      case TypeOfChange.ADDING:
         this.#clearBoard();
         this.#prepareAddingEvent();
         this.#renderBoard();
         break;
-      case TypeChange.REJECTION:
+      case TypeOfChange.REJECTION:
         this.#clearBoard();
         this.#renderBoard();
+        break;
+      case TypeOfChange.SUCCESS:
+        this.#isLoading = false;
+        remove(this.#messageComponent);
+        this.#renderBoard();
+        break;
+      case TypeOfChange.FAILURE:
+        this.#isLoading = false;
+        remove(this.#messageComponent);
+        this.#renderError(payload);
         break;
     }
   };
@@ -269,8 +320,20 @@ export default class RoutePresenter {
 
   #creatingFormDestroyHandler = () => {
     this.#addingModel.update(
-      TypeChange.REJECTION,
+      TypeOfChange.REJECTION,
       !this.#addingModel.isPressed
     );
   };
+
+  #getSortDescription(currentSortType) {
+    return Object.entries(sort).map(([type]) => {
+      const isEnabled = enableSortType[type];
+      const isChecked = type === currentSortType;
+      return {
+        type,
+        isEnabled,
+        isChecked,
+      };
+    });
+  }
 }

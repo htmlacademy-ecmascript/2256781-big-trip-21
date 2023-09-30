@@ -1,15 +1,16 @@
 import { TYPE_EVENTS, FormMode, CALENDAR_FORMAT } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/event.js';
+import { encode } from 'he';
 
 const getOfferTemplate = ({ type, id, title, price, offers }) =>
   `
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-luggage" data-id="${id}" ${offers.some((offer) => offer.id === id) ? 'checked' : ''}>
-      <label class="event__offer-label" for="event-offer-${type}-${id}">
-        <span class="event__offer-title">${title}</span>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${encode(type)}-${id}" type="checkbox" name="event-offer-luggage" data-id="${id}" ${offers.some((offer) => offer.id === id) ? 'checked' : ''}>
+      <label class="event__offer-label" for="event-offer-${encode(type)}-${id}">
+        <span class="event__offer-title">${encode(title)}</span>
         +€&nbsp;
-        <span class="event__offer-price">${price}</span>
+        <span class="event__offer-price">${encode(String(price))}</span>
       </label>
     </div>
   `;
@@ -18,15 +19,15 @@ const getEventTypeTemplate = () =>
   `
     ${TYPE_EVENTS.map((type) => `
       <div class="event__type-item">
-        <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}">
-        <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeFirstLetter(type)}</label>
+        <input id="event-type-${encode(type)}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${encode(type)}">
+        <label class="event__type-label  event__type-label--${encode(type)}" for="event-type-${encode(type)}-1">${encode(capitalizeFirstLetter(type))}</label>
     </div>`).join('')}
   `;
 
 const getDestinationListTemplate = ({ destinations }) =>
   `
     <datalist id="destination-list-1">
-      ${destinations?.map((item) => `<option value="${item.name}"></option>`).join('')}
+      ${destinations?.map((item) => `<option value="${encode(item.name)}"></option>`).join('')}
     </datalist>
   `;
 
@@ -48,7 +49,7 @@ const getFormTemplate = ({
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="img/icons/${encode(type)}.png" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -62,9 +63,9 @@ const getFormTemplate = ({
 
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${capitalizeFirstLetter(type)}
+            ${encode(capitalizeFirstLetter(type))}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${encode(name)}" list="destination-list-1">
           ${getDestinationListTemplate({destinations})}
         </div>
 
@@ -81,7 +82,7 @@ const getFormTemplate = ({
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${encode(String(basePrice))}">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -100,9 +101,9 @@ const getFormTemplate = ({
         </section>` : ''}
         ${description ? `<section class="event__section  event__section--destination">
           <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-          <p class="event__destination-description">${description}</p>
+          <p class="event__destination-description">${encode(description)}</p>
         ` : ''}
-        ${pictures && pictures.length > 0 ? `<div class="event__photos-container"><div class="event__photos-tape">${pictures.map((picture) => `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`).join('')}</div></div></section>` : ''}
+        ${pictures && pictures.length > 0 ? `<div class="event__photos-container"><div class="event__photos-tape">${pictures.map((picture) => `<img class="event__photo" src="${encode(picture.src)}" alt="${encode(picture.description)}">`).join('')}</div></div></section>` : ''}
       </section>
     </form>
   </li>`;

@@ -1,6 +1,6 @@
 import { remove, render, RenderPosition } from '../framework/render.js';
 import EventFormView from '../view/form-view.js';
-import { UserAction, FormMode, TypeChange } from '../const.js';
+import { UserAction, FormMode, TypeOfChange } from '../const.js';
 
 export default class CreatingPresenter {
   #eventListContainer = null;
@@ -70,7 +70,7 @@ export default class CreatingPresenter {
   }
 
   #saveClickHandler = (event) => {
-    this.#handleDataChange(UserAction.ADD, TypeChange.MINOR, {
+    this.#handleDataChange(UserAction.ADD, TypeOfChange.MINOR, {
       ...event,
     });
     this.destroy();

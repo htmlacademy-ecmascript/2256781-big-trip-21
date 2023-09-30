@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { getRandomInteger } from './common';
 import { CALENDAR_FORMAT } from '../const';
 
 dayjs.extend(utc);
@@ -20,20 +19,6 @@ const getDateDiff = (fromDate, toDate, unit = 'ms') =>
  */
 const formatDate = (date, typeFormating) =>
   date ? dayjs(date).format(typeFormating) : '';
-
-const getDate = ({ next }) => {
-  const isPlus = !getRandomInteger(0, 1);
-
-  return next
-    ? dayjs()
-      .add(getRandomInteger(0, 28), 'day')
-      .add(getRandomInteger(0, 24), 'hour')
-      .add(getRandomInteger(0, 60), 'minute')
-      .toDate()
-    : dayjs()
-      .add(isPlus ? getRandomInteger(0, 1) : -1, 'day')
-      .toDate();
-};
 
 const getFormattedDateDifference = (dateFrom, dateTo) => {
   const dayCount = getDateDiff(dateFrom, dateTo, 'd');
@@ -110,7 +95,6 @@ export {
   formatDate,
   getDateDiff,
   getFormattedDateDifference,
-  getDate,
   BLANK_POINT,
   BLANK_DESTINATION,
   isPointPast,

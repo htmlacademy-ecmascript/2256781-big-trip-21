@@ -2,7 +2,7 @@ import EventView from '../view/event-view.js';
 import EventFormView from '../view/form-view.js';
 import { remove, render, replace } from '../framework/render.js';
 import { isEscapeKey } from '../utils/common.js';
-import { FormMode, EventMode, UserAction, TypeChange } from '../const.js';
+import { FormMode, EventMode, UserAction, TypeOfChange } from '../const.js';
 import { isBigDifference } from '../utils/event.js';
 
 export default class EventPresenter {
@@ -107,7 +107,7 @@ export default class EventPresenter {
    * Обрабатывает нажатие пользователем на звёздочку
    */
   #buttonFavoriteClickHandler = () => {
-    this.#handleDataChange(UserAction.CHANGE, TypeChange.PATCH, {
+    this.#handleDataChange(UserAction.CHANGE, TypeOfChange.PATCH, {
       ...this.#event,
       isFavorite: !this.#event.isFavorite,
     });
@@ -137,7 +137,7 @@ export default class EventPresenter {
     const isMinor = isBigDifference(event, this.#event);
     this.#handleDataChange(
       UserAction.CHANGE,
-      isMinor ? TypeChange.MINOR : TypeChange.PATCH,
+      isMinor ? TypeOfChange.MINOR : TypeOfChange.PATCH,
       event
     );
     this.#replaceFormToCard();
@@ -148,7 +148,7 @@ export default class EventPresenter {
    * @param {*} event
    */
   #buttonDeleteClickHandler = (event) => {
-    this.#handleDataChange(UserAction.DELETE, TypeChange.MINOR, event);
+    this.#handleDataChange(UserAction.DELETE, TypeOfChange.MINOR, event);
     this.#replaceFormToCard();
   };
 
