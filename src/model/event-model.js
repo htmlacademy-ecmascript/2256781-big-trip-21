@@ -49,14 +49,18 @@ export default class EventModel extends Observable {
   }
 
   update(type, payload) {
-    // INFO: связь с сервером
-    const updatedEvent = this.#service.updateEvent(payload);
+    try {
+      // INFO: связь с сервером
+      const updatedEvent = this.#service.updateEvent(payload);
 
-    // INFO: обновляется набор событий полученным объектом
-    this.#events = updateListItem(this.#events, updatedEvent);
+      // INFO: обновляется набор событий полученным объектом
+      this.#events = updateListItem(this.#events, updatedEvent);
 
-    // INFO: информирование подписчиков о происшедшем событии
-    this._notify(type, updatedEvent);
+      // INFO: информирование подписчиков о происшедшем событии
+      this._notify(type, updatedEvent);
+    } catch (error) {
+      throw new Error('Cannot update event');
+    }
   }
 
   add(type, payload) {

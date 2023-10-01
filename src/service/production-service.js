@@ -6,6 +6,14 @@ export default class ProductionService extends ApiService {
     return this._load({ url: 'points' }).then(ApiService.parseResponse);
   }
 
+  get destinations() {
+    return this._load({ url: 'destinations' }).then(ApiService.parseResponse);
+  }
+
+  get offers() {
+    return this._load({ url: 'offers' }).then(ApiService.parseResponse);
+  }
+
   async updateEvent(event) {
     const response = await this._load({
       url: `points/${event.id}`,
@@ -18,17 +26,27 @@ export default class ProductionService extends ApiService {
     return parsedResponse;
   }
 
-  get destinations() {
-    return this._load({ url: 'destinations' }).then(ApiService.parseResponse);
+  async addEvent(event) {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(event)),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
   }
 
-  get offers() {
-    return this._load({ url: 'offers' }).then(ApiService.parseResponse);
+  async deleteEvent(event) {
+    const response = await this._load({
+      url: `points/${event.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
-
-  async addEvent() {}
-
-  async deleteEvent() {}
 
   #adaptToServer(event) {
     const adaptedEvent = {

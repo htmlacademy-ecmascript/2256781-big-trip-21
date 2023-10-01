@@ -132,6 +132,8 @@ const getCredential = () => ({
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 const DESTINATION_LENGTH = 3;
