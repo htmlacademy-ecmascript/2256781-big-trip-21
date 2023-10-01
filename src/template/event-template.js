@@ -6,12 +6,13 @@ import {
   TIME_FORMAT,
   DATE_TIME_FORMAT_WITH_TIME,
 } from '../const.js';
+import { encode } from 'he';
 
 const getEventOfferTemplate = ({ title, price }) => `
   <li class="event__offer">
-    <span class="event__offer-title">${title}</span>
+    <span class="event__offer-title">${encode(title)}</span>
     +€&nbsp;
-    <span class="event__offer-price">${price}</span>
+    <span class="event__offer-price">${encode(String(price))}</span>
   </li>
 `;
 
@@ -24,9 +25,9 @@ const getEventTemplate = ({ event, destination, checkedOffers = [] }) => {
     <div class="event">
       <time class="event__date" datetime="${formatDate(dateFrom, DATE_TIME_FORMAT)}">${formatDate(dateFrom, MONTH_FORMAT)}${formatDate(dateFrom, DAY_FORMAT)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${encode(type)}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destinationName}</h3>
+      <h3 class="event__title">${encode(type)} ${encode(destinationName)}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${formatDate(dateFrom, DATE_TIME_FORMAT_WITH_TIME)}">${formatDate(dateFrom, TIME_FORMAT)}</time>
@@ -36,7 +37,7 @@ const getEventTemplate = ({ event, destination, checkedOffers = [] }) => {
         <p class="event__duration">${getFormattedDateDifference(dateFrom, dateTo)}</p>
       </div>
       <p class="event__price">
-        €&nbsp;<span class="event__price-value">${basePrice}</span>
+        €&nbsp;<span class="event__price-value">${encode(String(basePrice))}</span>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">

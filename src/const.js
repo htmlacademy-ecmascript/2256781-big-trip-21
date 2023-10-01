@@ -48,6 +48,8 @@ const CALENDAR_FORMAT = 'DD/MM/YY HH:mm';
  */
 const DATE_TIME_FORMAT = 'YYYY-MM-DD';
 
+const DATE_TIME_DURATION = 'DD MMM';
+
 /**
  * Вариант форматирования даты для dayjs
  * @type {string}
@@ -94,12 +96,14 @@ const UserAction = {
 };
 
 /** @enum {string} Перечисление возможных типов перерисовки интерфейса */
-const TypeChange = {
+const TypeOfChange = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   ADDING: 'ADDING',
   REJECTION: 'REJECTION',
+  SUCCESS: 'SUCCESS',
+  FAILURE: 'FAILURE',
 };
 
 /** @enum {string} Перечисление возможных сортировок */
@@ -120,6 +124,25 @@ const enableSortType = {
   [SortType.OFFER]: false,
 };
 
+const getCredential = () => ({
+  AUTHORIZATION: 'Basic MQP4ERqKpF5kRG7',
+  END_POINT: 'https://21.objects.pages.academy/big-trip',
+});
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
+};
+
+const DESTINATION_LENGTH = 3;
+
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
 export {
   EVENT_COUNT,
   MONTH_FORMAT,
@@ -135,6 +158,10 @@ export {
   enableSortType,
   FormMode,
   UserAction,
-  TypeChange,
+  TypeOfChange,
   NoEventText,
+  getCredential,
+  Method,
+  DESTINATION_LENGTH,
+  DATE_TIME_DURATION,
 };

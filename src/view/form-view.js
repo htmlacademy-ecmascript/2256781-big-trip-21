@@ -17,7 +17,7 @@ export default class EventFormView extends AbstractStatefulView {
   #handleGetDestinationByName = null;
 
   #formMode = undefined;
-  #datepickers = null;
+  #datepickers = [];
 
   constructor({
     event = BLANK_POINT,
@@ -45,6 +45,8 @@ export default class EventFormView extends AbstractStatefulView {
     this.#handleGetDestinationByName = getDestinationByName;
 
     this.#formMode = formMode;
+
+    this.#destroyCalendars();
     this._restoreHandlers();
   }
 
@@ -221,8 +223,11 @@ export default class EventFormView extends AbstractStatefulView {
         event: {
           ...this._state.event,
           dateFrom: parseDateForm(evt.target.value),
+          dateTo: parseDateForm(evt.target.value),
         },
       });
+
+      this.#datepickers[1].set('minDate', this._state.event.dateFrom);
     } else {
       this._setState({
         event: {
@@ -230,6 +235,8 @@ export default class EventFormView extends AbstractStatefulView {
           dateTo: parseDateForm(evt.target.value),
         },
       });
+
+      this.#datepickers[0].set('maxDate', this._state.event.dateTo);
     }
   };
 
@@ -239,22 +246,44 @@ export default class EventFormView extends AbstractStatefulView {
 
   #setDatepicker() {
     const dateInputs = this.element.querySelectorAll('.event__input--time');
+    const commonConfig = {
+      dateFormat: 'd/m/y H:i',
+      enableTime: true,
+      'time_24hr': true,
+      allowInput: true,
+    };
+
+    this.#destroyCalendars();
 
     this.#datepickers = [...dateInputs].map((input, id) => {
-      const minDate = id ? dateInputs[0].value : null;
+      const minDate = id === 0 ? this._state.event.dateFrom : null;
+      const maxDate = id === 1 ? this._state.event.dateTo : null;
+
       return flatpickr(input, {
-        dateFormat: 'd/m/y H:i',
-        enableTime: true,
-        'time_24hr': true,
-        minDate,
-        allowInput: true,
+        ...commonConfig,
+        defaultDate: minDate ? minDate : maxDate,
       });
     });
   }
 
   removeElement() {
     super.removeElement();
+
+    if (this.#datepickers.length === 0) {
+      return;
+    }
+
     this.#datepickers.forEach((datepicker) => datepicker.destroy());
+    this.#datepickers = [];
+  }
+
+  #destroyCalendars() {
+    if (this.#datepickers.length === 0) {
+      return;
+    }
+
+    this.#datepickers.forEach((datepicker) => datepicker.destroy());
+    this.#datepickers = [];
   }
 
   static parseEventToState = ({ event }) => ({ event });

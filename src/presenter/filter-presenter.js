@@ -1,6 +1,6 @@
 import FilterView from '../view/filter-view.js';
 import { remove, render, replace } from '../framework/render.js';
-import { TypeChange } from '../const.js';
+import { TypeOfChange } from '../const.js';
 import { getViewFilters } from '../utils/filter.js';
 
 export default class FilterPresenter {
@@ -51,6 +51,6 @@ export default class FilterPresenter {
       return;
     }
 
-    this.#filterModel.update(TypeChange.MAJOR, filter);
+    this.#filterModel.update(TypeOfChange.MAJOR, filter);
   };
 }

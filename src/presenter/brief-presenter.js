@@ -3,7 +3,15 @@ import { remove, render, replace } from '../framework/render.js';
 import AddingPresenter from './adding-presenter.js';
 import FilterPresenter from './filter-presenter.js';
 import { getMappedObjectsByIds } from '../utils/event.js';
-import { FilterType, TypeChange } from '../const.js';
+import {
+  FilterType,
+  TypeOfChange,
+  SortType,
+  DESTINATION_LENGTH,
+  DATE_TIME_DURATION,
+} from '../const.js';
+import { sort } from '../utils/sort.js';
+import dayjs from 'dayjs';
 
 export default class BriefPresenter {
   #container = null;
@@ -43,7 +51,7 @@ export default class BriefPresenter {
     this.#addingModel.addObserver(this.#changingModelsHandler);
   }
 
-  init() {
+  async init() {
     this.#renderBrief();
     this.#renderAddButton();
     this.#renderFilter();
@@ -107,12 +115,12 @@ export default class BriefPresenter {
    * Он служит для реагирования на изменения модели
    * По контракту у него должно быть 2 параметра
    * (второй параметр НЕ обязательный)
-   * @param {TypeChange} type
+   * @param {TypeOfChange} type
    * @param {Event} [payload = null]
    */
   #changingModelsHandler = (type) => {
-    if (type === TypeChange.ADDING) {
-      this.#filterModel.update(TypeChange.MAJOR, FilterType.EVERYTHING);
+    if (type === TypeOfChange.ADDING) {
+      this.#filterModel.update(TypeOfChange.MAJOR, FilterType.EVERYTHING);
       return;
     }
 
@@ -120,14 +128,31 @@ export default class BriefPresenter {
   };
 
   #addingClickHandler = () => {
-    this.#addingModel.update(TypeChange.ADDING, !this.#addingModel.isPressed);
+    this.#addingModel.update(TypeOfChange.ADDING, !this.#addingModel.isPressed);
   };
 
-  // TODO: Реализовать получение цепочки маршрутов
-  #getRouteHandler = () => 'Moscow - Dublin - Austin';
+  // Реализация получение цепочки маршрутов
+  #getRouteHandler = () => {
+    const destinations = this.#destinationModel.destinations;
+    const destinationNames = sort[SortType.DAY]([
+      ...this.#eventModel.events,
+    ]).map(
+      (event) =>
+        destinations.find((destination) => destination.id === event.destination)
+          .name
+    );
 
-  // TODO: Реализовать получение длительности маршрутов
-  #getDurationHandler = () => 'Mar 18&nbsp;—&nbsp;Apr 20';
+    return destinationNames.length <= DESTINATION_LENGTH
+      ? destinationNames.join('&nbsp;&mdash;&nbsp')
+      : `${destinationNames.at(0)}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationNames.at(destinationNames.length - 1)}`;
+  };
+
+  // Реализация получение длительности маршрутов
+  #getDurationHandler = () => {
+    const sortedEvents = sort[SortType.DAY]([...this.#eventModel.events]);
+
+    return sortedEvents.length > 0 ? `${dayjs(sortedEvents.at(0).dateFrom).format(DATE_TIME_DURATION)}&nbsp;&mdash;&nbsp${dayjs(sortedEvents.at(sortedEvents.length - 1).dateTo).format(DATE_TIME_DURATION)}` : '';
+  };
 
   // Реализация получение итоговой стоимости маршрутов и выбранных опций
   #getBottomLineHandler = () => {

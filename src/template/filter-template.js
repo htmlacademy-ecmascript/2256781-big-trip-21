@@ -1,18 +1,20 @@
+import { encode } from 'he';
+
 const createFilterItemTemplate = (filter, isChecked) => {
   const { type, count } = filter;
 
   return `
   <div class="trip-filters__filter">
     <input
-      id="filter-${type}"
+      id="filter-${encode(type)}"
       class="trip-filters__filter-input visually-hidden"
       type="radio"
       name="trip-filter"
-      value="${type}"
-      data-item="${type}"
+      value="${encode(type)}"
+      data-item="${encode(type)}"
       ${isChecked ? 'checked' : ''}
       ${count === 0 ? 'disabled' : ''}>
-    <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
+    <label class="trip-filters__filter-label" for="filter-${encode(type)}">${encode(type)}</label>
   </div>
 `;
 };
