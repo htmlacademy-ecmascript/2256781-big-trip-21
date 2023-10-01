@@ -45,6 +45,8 @@ export default class EventFormView extends AbstractStatefulView {
     this.#handleGetDestinationByName = getDestinationByName;
 
     this.#formMode = formMode;
+
+    this.#destroyCalendars();
     this._restoreHandlers();
   }
 
@@ -247,27 +249,39 @@ export default class EventFormView extends AbstractStatefulView {
     const commonConfig = {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
-      locale: {
-        firstDayOfWeek: 1,
-      },
       'time_24hr': true,
       allowInput: true,
     };
 
+    this.#destroyCalendars();
+
     this.#datepickers = [...dateInputs].map((input, id) => {
-      const minDate = id === 1 ? this._state.event.dateFrom : null;
-      const maxDate = id === 0 ? this._state.event.dateTo : null;
+      const minDate = id === 0 ? this._state.event.dateFrom : null;
+      const maxDate = id === 1 ? this._state.event.dateTo : null;
 
       return flatpickr(input, {
         ...commonConfig,
         defaultDate: minDate ? minDate : maxDate,
-        [minDate ? 'minDate' : 'maxDate']: minDate ? minDate : maxDate,
       });
     });
   }
 
   removeElement() {
     super.removeElement();
+
+    if (this.#datepickers.length === 0) {
+      return;
+    }
+
+    this.#datepickers.forEach((datepicker) => datepicker.destroy());
+    this.#datepickers = [];
+  }
+
+  #destroyCalendars() {
+    if (this.#datepickers.length === 0) {
+      return;
+    }
+
     this.#datepickers.forEach((datepicker) => datepicker.destroy());
     this.#datepickers = [];
   }
