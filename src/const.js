@@ -143,6 +143,30 @@ export const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+const ButtonLabel = {
+  CANCEL_DEFAULT: 'Cancel',
+  DELETE_DEFAULT: 'Delete',
+  DELETE_IN_PROGRESS: 'Deleting...',
+  SAVE_DEFAULT: 'Save',
+  SAVE_IN_PROGRESS: 'Saving...',
+};
+
+const BLANK_POINT = {
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: 'taxi',
+};
+
+const BLANK_DESTINATION = {
+  description: '',
+  name: '',
+  pictures: [],
+};
+
 export {
   EVENT_COUNT,
   MONTH_FORMAT,
@@ -164,4 +188,7 @@ export {
   Method,
   DESTINATION_LENGTH,
   DATE_TIME_DURATION,
+  ButtonLabel,
+  BLANK_POINT,
+  BLANK_DESTINATION,
 };

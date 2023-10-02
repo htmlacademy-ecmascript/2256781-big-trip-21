@@ -1,6 +1,6 @@
-import { TYPE_EVENTS, FormMode, CALENDAR_FORMAT } from '../const.js';
+import { TYPE_EVENTS, FormMode, CALENDAR_FORMAT, ButtonLabel, BLANK_POINT, BLANK_DESTINATION } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
-import { BLANK_POINT, BLANK_DESTINATION, formatDate } from '../utils/event.js';
+import { formatDate } from '../utils/event.js';
 import { encode } from 'he';
 
 const getOfferTemplate = ({ type, id, title, price, offers }) =>
@@ -38,10 +38,16 @@ const getFormTemplate = ({
   destinations = [],
   checkedOffers = [],
   allOffersByType = [],
+  isDisabled,
+  isSaving,
+  isDeleting,
 }) => {
   const { type, basePrice, dateFrom, dateTo } = event;
   const { name, description, pictures } = destination;
   const isEditingMode = formMode === FormMode.EDITING;
+  const labelSave = isSaving ? ButtonLabel.SAVE_IN_PROGRESS : ButtonLabel.SAVE_DEFAULT;
+  const labelDelete = isDeleting ? ButtonLabel.DELETE_IN_PROGRESS : ButtonLabel.DELETE_DEFAULT;
+  const labelCancel = ButtonLabel.CANCEL_DEFAULT;
 
   return `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -51,7 +57,7 @@ const getFormTemplate = ({
             <span class="visually-hidden">Choose event type</span>
             <img class="event__type-icon" width="17" height="17" src="img/icons/${encode(type)}.png" alt="Event type icon">
           </label>
-          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+          <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox"${isDisabled ? 'disabled' : ''}>
 
           <div class="event__type-list">
             <fieldset class="event__type-group">
@@ -65,16 +71,16 @@ const getFormTemplate = ({
           <label class="event__label  event__type-output" for="event-destination-1">
             ${encode(capitalizeFirstLetter(type))}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${encode(name)}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${encode(name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
           ${getDestinationListTemplate({destinations})}
         </div>
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(dateFrom, CALENDAR_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(dateFrom, CALENDAR_FORMAT)}" ${isDisabled ? 'disabled' : ''} required>
           —
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(dateTo, CALENDAR_FORMAT)}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${formatDate(dateTo, CALENDAR_FORMAT)}" ${isDisabled ? 'disabled' : ''} required>
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -82,12 +88,12 @@ const getFormTemplate = ({
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${encode(String(basePrice))}">
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${encode(String(basePrice))}" ${isDisabled ? 'disabled' : ''} required>
         </div>
 
-        <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-        <button class="event__reset-btn" type="reset">${isEditingMode ? 'Delete' : 'Cancel'}</button>
-        ${isEditingMode ? '<button class="event__rollup-btn" type="button">' : ''}
+        <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${labelSave}</button>
+        <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isEditingMode ? labelDelete : labelCancel}</button>
+        ${isEditingMode ? `<button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>` : ''}
         <span class="visually-hidden">Open event</span>
         </button>
       </header>

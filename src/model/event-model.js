@@ -48,40 +48,50 @@ export default class EventModel extends Observable {
     return this.#events;
   }
 
-  update(type, payload) {
+  async update(type, payload) {
     try {
       // INFO: связь с сервером
-      const updatedEvent = this.#service.updateEvent(payload);
+      const response = await this.#service.updateEvent(payload);
+      const updatedEvent = this.#service.adaptToClient(response);
 
-      // INFO: обновляется набор событий полученным объектом
+      // INFO: обновляется набор событий - объектом с сервера после адаптации
       this.#events = updateListItem(this.#events, updatedEvent);
 
       // INFO: информирование подписчиков о происшедшем событии
       this._notify(type, updatedEvent);
     } catch (error) {
-      throw new Error('Cannot update event');
+      throw new Error('Cannot update an event');
     }
   }
 
-  add(type, payload) {
-    // INFO: связь с сервером
-    const addedEvent = this.#service.addEvent(payload);
+  async add(type, payload) {
+    try {
+      // INFO: связь с сервером
+      const response = await this.#service.addEvent(payload);
+      const addedEvent = this.#service.adaptToClient(response);
 
-    // INFO: обновляется набор событий добавляется объект
-    this.#events.push(addedEvent);
+      // INFO: обновляется набор событий - добавляется объект после адаптации
+      this.#events.push(addedEvent);
 
-    // INFO: информирование подписчиков о происшедшем событии
-    this._notify(type, addedEvent);
+      // INFO: информирование подписчиков о происшедшем событии
+      this._notify(type, addedEvent);
+    } catch (error) {
+      throw new Error('Cannot add an event');
+    }
   }
 
-  delete(type, payload) {
-    // INFO: связь с сервером
-    this.#service.deleteEvent(payload);
+  async delete(type, payload) {
+    try {
+      // INFO: связь с сервером
+      await this.#service.deleteEvent(payload);
 
-    // INFO: обновляется набор событий удаляется объект
-    this.#events = deleteListItem(this.#events, payload);
+      // INFO: обновляется набор событий - удаляется объект
+      this.#events = deleteListItem(this.#events, payload);
 
-    // INFO: информирование подписчиков о происшедшем событии
-    this._notify(type);
+      // INFO: информирование подписчиков о происшедшем событии
+      this._notify(type);
+    } catch (error) {
+      throw new Error('Cannot delete an event');
+    }
   }
 }

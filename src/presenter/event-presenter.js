@@ -80,11 +80,47 @@ export default class EventPresenter {
     }
 
     if (this.#mode === EventMode.FORM) {
-      replace(this.#eventFormComponent, prevFormComponent);
+      replace(this.#eventComponent, prevFormComponent);
+      this.#mode = EventMode.CARD;
     }
 
     remove(prevEventComponent);
     remove(prevFormComponent);
+  }
+
+  setSaving() {
+    if (this.#mode === EventMode.FORM) {
+      this.#eventFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === EventMode.FORM) {
+      this.#eventFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === EventMode.CARD) {
+      this.#eventComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#eventFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventFormComponent.shake(resetFormState);
   }
 
   resetView() {
@@ -140,7 +176,6 @@ export default class EventPresenter {
       isMinor ? TypeOfChange.MINOR : TypeOfChange.PATCH,
       event
     );
-    this.#replaceFormToCard();
   };
 
   /**
@@ -159,8 +194,8 @@ export default class EventPresenter {
   #escKeyDownHandler = (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
+      this.#eventFormComponent.reset(this.#event);
       this.#replaceFormToCard();
-      // document.removeEventListener('keydown', this.#escKeyDownHandler);
     }
   };
 

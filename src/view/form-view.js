@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getFormTemplate } from '../template/form-template.js';
-import { BLANK_POINT, parseDateForm } from '../utils/event.js';
-import { FormMode } from '../const.js';
+import { parseDateForm } from '../utils/event.js';
+import { FormMode, BLANK_POINT } from '../const.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -99,7 +99,8 @@ export default class EventFormView extends AbstractStatefulView {
   }
 
   get template() {
-    const event = this._state.event;
+    const { event, isDisabled, isSaving, isDeleting } = this._state;
+
     const destinationId = event.destination;
     const destinations = this.#handleGetAllDestinations();
     const destination = destinations.find((item) => item.id === destinationId);
@@ -117,6 +118,9 @@ export default class EventFormView extends AbstractStatefulView {
       destinations,
       checkedOffers,
       allOffersByType,
+      isDisabled,
+      isSaving,
+      isDeleting,
     });
   }
 
@@ -241,7 +245,12 @@ export default class EventFormView extends AbstractStatefulView {
   };
 
   reset(event) {
-    this.updateElement({ event });
+    this.updateElement({
+      event,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
+    });
   }
 
   #setDatepicker() {
@@ -286,7 +295,12 @@ export default class EventFormView extends AbstractStatefulView {
     this.#datepickers = [];
   }
 
-  static parseEventToState = ({ event }) => ({ event });
+  static parseEventToState = ({
+    event,
+    isDisabled = false,
+    isSaving = false,
+    isDeleting = false,
+  }) => ({ event, isDisabled, isSaving, isDeleting });
 
   static parseStateToEvent = (state) => state.event;
 }

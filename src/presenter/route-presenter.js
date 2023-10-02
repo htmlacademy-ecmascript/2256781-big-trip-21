@@ -6,7 +6,7 @@ import {
   RenderPosition,
 } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
-import { enableSortType } from '../const.js';
+import { TimeLimit, enableSortType } from '../const.js';
 import MessageView from '../view/message-view.js';
 import { SortType, TypeOfChange, UserAction } from '../const.js';
 import { sort } from '../utils/sort.js';
@@ -15,6 +15,7 @@ import { filter } from '../utils/filter.js';
 import CreatingPresenter from './creating-presenter.js';
 import { getMappedObjectsByIds } from '../utils/event.js';
 import { NoEventText } from '../const.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
 export default class RoutePresenter {
   #container = null;
@@ -34,6 +35,11 @@ export default class RoutePresenter {
   #currentSortType = SortType.DAY;
 
   #isLoading = true;
+
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT,
+  });
 
   constructor({
     container,
@@ -192,20 +198,39 @@ export default class RoutePresenter {
    * с данными через модель
    * @param {UserAction} action
    * @param {TypeOfChange} updateType
-   * @param {Event} update
+   * @param {Event} data
    */
-  #dataChangeHandler = (action = UserAction.CHANGE, updateType, update) => {
+  #dataChangeHandler = async (action = UserAction.CHANGE, updateType, data) => {
+    this.#uiBlocker.block();
+
     switch (action) {
       case UserAction.DELETE:
-        this.#eventModel.delete(updateType, update);
+        this.#eventPresenters.get(data.id).setDeleting();
+        try {
+          await this.#eventModel.delete(updateType, data);
+        } catch (error) {
+          this.#eventPresenters.get(data.id).setAborting();
+        }
         break;
       case UserAction.ADD:
-        this.#eventModel.add(updateType, update);
+        this.#creatingPresenter.setSaving();
+        try {
+          await this.#eventModel.add(updateType, data);
+        } catch (error) {
+          this.#creatingPresenter.setAborting();
+        }
         break;
       case UserAction.CHANGE:
-        this.#eventModel.update(updateType, update);
+        this.#eventPresenters.get(data.id).setSaving();
+        try {
+          await this.#eventModel.update(updateType, data);
+        } catch (error) {
+          this.#eventPresenters.get(data.id).setAborting();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #sortEventHandler = (sortType) => {
