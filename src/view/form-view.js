@@ -258,7 +258,7 @@ export default class EventFormView extends AbstractStatefulView {
     const commonConfig = {
       dateFormat: 'd/m/y H:i',
       enableTime: true,
-      time_24hr: true,
+      'time_24hr': true,
       allowInput: true,
     };
 
