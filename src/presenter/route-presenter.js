@@ -58,16 +58,16 @@ export default class RoutePresenter {
 
     this.#creatingPresenter = new CreatingPresenter({
       eventListContainer: this.#eventListComponent.element,
-      onDataChange: this.#dataChangeHandler,
+      onDataChange: this.#userActionHandler,
       onDestroy: this.#creatingFormDestroyHandler,
       getAllDestinations: this.#getDestinationsHandler,
       getAllOffersByType: this.#getOffersByTypeHandler,
       getDestinationByName: this.#getDestinationByNameHandler,
     });
 
-    this.#eventModel.addObserver(this.#changingModelsHandler);
-    this.#addingModel.addObserver(this.#changingModelsHandler);
-    this.#filterModel.addObserver(this.#changingModelsHandler);
+    this.#eventModel.addObserver(this.#changingModelHandler);
+    this.#addingModel.addObserver(this.#changingModelHandler);
+    this.#filterModel.addObserver(this.#changingModelHandler);
   }
 
   async init() {
@@ -84,7 +84,7 @@ export default class RoutePresenter {
   #renderEvent(event) {
     const eventPresenter = new EventPresenter({
       eventListContainer: this.#eventListComponent.element,
-      onDataChange: this.#dataChangeHandler,
+      onDataChange: this.#userActionHandler,
       onModeChange: this.#modeChangeHandler,
       getAllDestinations: this.#getDestinationsHandler,
       getAllOffersByType: this.#getOffersByTypeHandler,
@@ -117,6 +117,10 @@ export default class RoutePresenter {
   }
 
   #renderBoard() {
+    const quantityEvents = this.#filterModel.getQuantityByCurrentType([
+      ...this.#eventModel.events,
+    ]);
+
     render(this.#eventListComponent, this.#container);
 
     if (this.#isLoading) {
@@ -124,7 +128,7 @@ export default class RoutePresenter {
       return;
     }
 
-    if (this.#eventModel.events === 0) {
+    if (quantityEvents === 0 && !this.#addingModel.isPressed) {
       this.#renderNoEvents();
       return;
     }
@@ -142,6 +146,7 @@ export default class RoutePresenter {
   }
 
   #clearEvents = () => {
+    this.#creatingPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.destroy());
     this.#eventPresenters.clear();
   };
@@ -200,7 +205,7 @@ export default class RoutePresenter {
    * @param {TypeOfChange} updateType
    * @param {Event} data
    */
-  #dataChangeHandler = async (action = UserAction.CHANGE, updateType, data) => {
+  #userActionHandler = async (action = UserAction.CHANGE, updateType, data) => {
     this.#uiBlocker.block();
 
     switch (action) {
@@ -216,6 +221,10 @@ export default class RoutePresenter {
         this.#creatingPresenter.setSaving();
         try {
           await this.#eventModel.add(updateType, data);
+          this.#addingModel.update(
+            TypeOfChange.CREATING,
+            !this.#addingModel.isPressed
+          );
         } catch (error) {
           this.#creatingPresenter.setAborting();
         }
@@ -243,13 +252,21 @@ export default class RoutePresenter {
   };
 
   #modeChangeHandler = () => {
-    this.#creatingPresenter.destroy();
+    // const quantityEvents = this.#filterModel.getQuantityByCurrentType([
+    //   ...this.#eventModel.events,
+    // ]);
 
-    if (this.#eventModel.length === 0) {
-      this.#renderNoEvents();
-    }
-
+    // this.#creatingPresenter.destroy();
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
+
+    // if (quantityEvents === 0 && !this.#addingModel.isPressed) {
+    //   this.#renderNoEvents();
+    // }
+
+    // this.#addingModel.update(
+    //   TypeOfChange.CREATING,
+    //   !this.#addingModel.isPressed
+    // );
   };
 
   /**
@@ -262,7 +279,7 @@ export default class RoutePresenter {
    * @param {TypeOfChange} type
    * @param {Event} [payload = null]
    */
-  #changingModelsHandler = (type = TypeOfChange.PATCH, payload = null) => {
+  #changingModelHandler = (type = TypeOfChange.PATCH, payload = null) => {
     switch (type) {
       case TypeOfChange.MINOR:
         this.#clearBoard();
@@ -273,7 +290,7 @@ export default class RoutePresenter {
         this.#renderBoard();
         break;
       case TypeOfChange.PATCH:
-        this.#eventPresenters?.get(payload.id)?.init(payload);
+        this.#eventPresenters.get(payload.id).init(payload);
         break;
       case TypeOfChange.ADDING:
         this.#clearBoard();
@@ -300,10 +317,6 @@ export default class RoutePresenter {
   #prepareAddingEvent = () => {
     this.#creatingPresenter.init();
   };
-
-  #isNoPoints() {
-    return this.events.length === 0 && !this.#addingModel.isPressed;
-  }
 
   /**
    * Обработчик передаётся во вьюху EventFormView

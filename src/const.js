@@ -74,6 +74,19 @@ const NoEventText = {
   [FilterType.FUTURE]: 'There are no future events now',
 };
 
+const InformationMessage = {
+  INITIALIZE_SUCCESS:
+    'SUCCESS! route points, destinations and offers - received from the server',
+  INITIALIZE_FAILURE:
+    'FAILURE! route points, destinations or offers - returned empty after a request to the server',
+  UPDATE_FAILURE: 'FAILURE! When updating an event',
+  UPDATE_SUCCESS: 'SUCCESS! When updating an event',
+  ADD_FAILURE: 'FAILURE! When adding an event',
+  ADD_SUCCESS: 'SUCCESS! When adding an event',
+  DELETE_FAILURE: 'FAILURE! When deleting an event',
+  DELETE_SUCCESS: 'SUCCESS! When deleting an event',
+};
+
 /**
  * @enum {string} Режим в котором открыта форма
  */
@@ -104,6 +117,7 @@ const TypeOfChange = {
   REJECTION: 'REJECTION',
   SUCCESS: 'SUCCESS',
   FAILURE: 'FAILURE',
+  CREATING: 'CREATING',
 };
 
 /** @enum {string} Перечисление возможных сортировок */
@@ -191,4 +205,5 @@ export {
   ButtonLabel,
   BLANK_POINT,
   BLANK_DESTINATION,
+  InformationMessage,
 };

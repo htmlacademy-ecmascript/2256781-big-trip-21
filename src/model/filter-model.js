@@ -24,8 +24,8 @@ export default class FilterModel extends Observable {
     return this.#filters;
   }
 
-  getFilteredEvents(events) {
-    return this.#filters[this.#currentFilter](events);
+  getQuantityByCurrentType(events) {
+    return this.#filters[this.#currentFilter](events).length;
   }
 
   update(type, payload) {
