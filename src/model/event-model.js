@@ -23,18 +23,10 @@ export default class EventModel extends Observable {
       ]);
       const events = await this.#service.events;
       this.#events = events.map(this.#service.adaptToClient);
-      this._notify(TypeOfChange.SUCCESS, {
-        isError: false,
-        message:
-          'SUCCESS! route points, destinations and offers - received from the server',
-      });
+      this._notify(TypeOfChange.SUCCESS);
     } catch (error) {
       this.#events = [];
-      this._notify(TypeOfChange.FAILURE, {
-        isError: true,
-        message:
-          'FAILURE! route points, destinations or offers - left empty after a request to the server',
-      });
+      this._notify(TypeOfChange.FAILURE);
     }
   }
 
@@ -60,7 +52,7 @@ export default class EventModel extends Observable {
       // INFO: информирование подписчиков о происшедшем событии
       this._notify(type, updatedEvent);
     } catch (error) {
-      throw new Error('Cannot update an event');
+      throw new Error('Cannot add event', error);
     }
   }
 
@@ -76,7 +68,7 @@ export default class EventModel extends Observable {
       // INFO: информирование подписчиков о происшедшем событии
       this._notify(type, addedEvent);
     } catch (error) {
-      throw new Error('Cannot add an event');
+      throw new Error('Cannot add event', error);
     }
   }
 
@@ -89,9 +81,9 @@ export default class EventModel extends Observable {
       this.#events = deleteListItem(this.#events, payload);
 
       // INFO: информирование подписчиков о происшедшем событии
-      this._notify(type);
+      this._notify(type, payload);
     } catch (error) {
-      throw new Error('Cannot delete an event');
+      throw new Error('Cannot delete event', error);
     }
   }
 }

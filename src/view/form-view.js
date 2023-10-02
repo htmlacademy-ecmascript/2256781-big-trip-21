@@ -81,7 +81,7 @@ export default class EventFormView extends AbstractStatefulView {
 
     this.element
       .querySelector('.event__input--price')
-      .addEventListener('input', this.#priceChangeHandler);
+      .addEventListener('change', this.#priceChangeHandler);
 
     this.element
       .querySelectorAll('.event__offer-checkbox')
@@ -204,7 +204,7 @@ export default class EventFormView extends AbstractStatefulView {
   #offerChangeHandler = (evt) => {
     evt.preventDefault();
 
-    const id = +evt.target.dataset.id;
+    const id = evt.target.dataset.id;
     const event = this._state.event;
     const isChecked = evt.target.checked;
     const offerIds = [...event.offers];

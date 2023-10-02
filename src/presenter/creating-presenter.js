@@ -64,8 +64,6 @@ export default class CreatingPresenter {
     remove(this.#eventFormComponent);
     this.#eventFormComponent = null;
 
-    this.#handleDestroy();
-
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
@@ -96,12 +94,14 @@ export default class CreatingPresenter {
 
   #destroyClickHandler = () => {
     this.destroy();
+    this.#handleDestroy();
   };
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       this.destroy();
+      this.#handleDestroy();
     }
   };
 }
