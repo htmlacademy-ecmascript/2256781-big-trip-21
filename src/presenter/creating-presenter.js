@@ -69,11 +69,29 @@ export default class CreatingPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#eventFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#eventFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventFormComponent.shake(resetFormState);
+  }
+
   #saveClickHandler = (event) => {
     this.#handleDataChange(UserAction.ADD, TypeOfChange.MINOR, {
       ...event,
     });
-    this.destroy();
   };
 
   #destroyClickHandler = () => {

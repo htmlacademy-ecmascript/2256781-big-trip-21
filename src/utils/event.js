@@ -6,7 +6,8 @@ import { CALENDAR_FORMAT } from '../const';
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);
 
-const parseDateForm = (dateString) => dayjs.utc(dateString, CALENDAR_FORMAT).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+const parseDateForm = (dateString) =>
+  dayjs.utc(dateString, CALENDAR_FORMAT).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 
 const getDateDiff = (fromDate, toDate, unit = 'ms') =>
   dayjs(toDate).diff(dayjs(fromDate), unit);
@@ -36,24 +37,6 @@ const getFormattedDateDifference = (dateFrom, dateTo) => {
     }M`;
   }
   return formattedDate;
-};
-
-const BLANK_POINT = {
-  id: crypto.randomUUID(),
-  basePrice: '',
-  dateFrom: new Date(),
-  dateTo: new Date(),
-  destination: '',
-  isFavorite: false,
-  offers: [],
-  type: 'taxi',
-};
-
-const BLANK_DESTINATION = {
-  id: crypto.randomUUID(),
-  description: '',
-  name: '',
-  pictures: [],
 };
 
 const isPointPast = ({ dateFrom }) => dayjs().isAfter(dateFrom, 'day');
@@ -95,8 +78,6 @@ export {
   formatDate,
   getDateDiff,
   getFormattedDateDifference,
-  BLANK_POINT,
-  BLANK_DESTINATION,
   isPointPast,
   isPointPresent,
   isPointFuture,
