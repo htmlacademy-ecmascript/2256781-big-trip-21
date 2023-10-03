@@ -171,6 +171,7 @@ export default class EventPresenter {
    */
   #buttonSaveClickHandler = (event) => {
     const isMinor = isBigDifference(event, this.#event);
+
     this.#handleDataChange(
       UserAction.CHANGE,
       isMinor ? TypeOfChange.MINOR : TypeOfChange.PATCH,
@@ -184,7 +185,6 @@ export default class EventPresenter {
    */
   #buttonDeleteClickHandler = (event) => {
     this.#handleDataChange(UserAction.DELETE, TypeOfChange.MINOR, event);
-    this.#replaceFormToCard();
   };
 
   /**
@@ -206,9 +206,9 @@ export default class EventPresenter {
   }
 
   #replaceCardToForm() {
-    this.#handleModeChange();
     replace(this.#eventFormComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#handleModeChange();
     this.#mode = EventMode.FORM;
   }
 }

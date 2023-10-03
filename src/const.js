@@ -42,13 +42,9 @@ const TIME_FORMAT = 'HH:mm';
  */
 const CALENDAR_FORMAT = 'DD/MM/YY HH:mm';
 
-/**
- * Вариант форматирования даты для dayjs
- * @type {string}
- */
-const DATE_TIME_FORMAT = 'YYYY-MM-DD';
-
 const DATE_TIME_DURATION = 'DD MMM';
+
+const DATE_MONTH_DAY = 'MMM DD';
 
 /**
  * Вариант форматирования даты для dayjs
@@ -77,8 +73,7 @@ const NoEventText = {
 const InformationMessage = {
   INITIALIZE_SUCCESS:
     'SUCCESS! route points, destinations and offers - received from the server',
-  INITIALIZE_FAILURE:
-    'FAILURE! route points, destinations or offers - returned empty after a request to the server',
+  INITIALIZE_FAILURE: 'FAILURE! Failed to load latest route information',
   UPDATE_FAILURE: 'FAILURE! When updating an event',
   UPDATE_SUCCESS: 'SUCCESS! When updating an event',
   ADD_FAILURE: 'FAILURE! When adding an event',
@@ -166,13 +161,13 @@ const ButtonLabel = {
 };
 
 const BLANK_POINT = {
-  basePrice: '',
+  basePrice: 0,
   dateFrom: '',
   dateTo: '',
   destination: '',
   isFavorite: false,
   offers: [],
-  type: 'taxi',
+  type: 'flight',
 };
 
 const BLANK_DESTINATION = {
@@ -187,7 +182,6 @@ export {
   DAY_FORMAT,
   TIME_FORMAT,
   CALENDAR_FORMAT,
-  DATE_TIME_FORMAT,
   DATE_TIME_FORMAT_WITH_TIME,
   TYPE_EVENTS,
   FilterType,
@@ -206,4 +200,5 @@ export {
   BLANK_POINT,
   BLANK_DESTINATION,
   InformationMessage,
+  DATE_MONTH_DAY,
 };

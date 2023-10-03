@@ -57,6 +57,15 @@ export default class BriefPresenter {
     this.#renderFilter();
   }
 
+  destroy() {
+    if (this.#briefComponent === null) {
+      return;
+    }
+
+    remove(this.#briefComponent);
+    this.#briefComponent = null;
+  }
+
   #renderFilter() {
     const boxFilterElement = document.querySelector('.trip-controls__filters');
     const prevFilterPresenter = this.#filterPresenter;
@@ -92,6 +101,11 @@ export default class BriefPresenter {
 
   #renderBrief() {
     const prevBriefComponent = this.#briefComponent;
+
+    if (this.#eventModel.events.length === 0) {
+      this.destroy();
+      return;
+    }
 
     this.#briefComponent = new BriefView({
       getRoute: this.#getRouteHandler,
@@ -134,6 +148,10 @@ export default class BriefPresenter {
   // Реализация получение цепочки маршрутов
   #getRouteHandler = () => {
     const destinations = this.#destinationModel.destinations;
+    if (destinations.length === 0) {
+      return destinations;
+    }
+
     const destinationNames = sort[SortType.DAY]([
       ...this.#eventModel.events,
     ]).map(
@@ -144,14 +162,24 @@ export default class BriefPresenter {
 
     return destinationNames.length <= DESTINATION_LENGTH
       ? destinationNames.join('&nbsp;&mdash;&nbsp')
-      : `${destinationNames.at(0)}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationNames.at(destinationNames.length - 1)}`;
+      : `${destinationNames.at(
+        0
+      )}&nbsp;&mdash;&nbsp;...&nbsp;&mdash;&nbsp;${destinationNames.at(
+        destinationNames.length - 1
+      )}`;
   };
 
   // Реализация получение длительности маршрутов
   #getDurationHandler = () => {
     const sortedEvents = sort[SortType.DAY]([...this.#eventModel.events]);
 
-    return sortedEvents.length > 0 ? `${dayjs(sortedEvents.at(0).dateFrom).format(DATE_TIME_DURATION)}&nbsp;&mdash;&nbsp${dayjs(sortedEvents.at(sortedEvents.length - 1).dateTo).format(DATE_TIME_DURATION)}` : '';
+    return sortedEvents.length > 0
+      ? `${dayjs(sortedEvents.at(0).dateFrom).format(
+          DATE_TIME_DURATION
+        )}&nbsp;&mdash;&nbsp${dayjs(
+          sortedEvents.at(sortedEvents.length - 1).dateTo
+        ).format(DATE_TIME_DURATION)}`
+      : '';
   };
 
   // Реализация получение итоговой стоимости маршрутов и выбранных опций

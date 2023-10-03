@@ -39,11 +39,14 @@ const getFormattedDateDifference = (dateFrom, dateTo) => {
   return formattedDate;
 };
 
-const isPointPast = ({ dateFrom }) => dayjs().isAfter(dateFrom, 'day');
+const isPointPast = ({ dateFrom, dateTo }) =>
+  dayjs().isAfter(dayjs(dateFrom)) && dayjs().isAfter(dayjs(dateTo));
 
-const isPointPresent = ({ dateFrom }) => dayjs().isSame(dateFrom, 'day');
+const isPointPresent = ({ dateFrom, dateTo }) =>
+  dayjs().isAfter(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo));
 
-const isPointFuture = ({ dateFrom }) => dayjs().isBefore(dateFrom, 'day');
+const isPointFuture = ({ dateFrom, dateTo }) =>
+  dayjs().isBefore(dayjs(dateFrom)) && dayjs().isBefore(dayjs(dateTo));
 
 const sortByDay = (pointA, pointB) => {
   if (dayjs(pointA.dateFrom).isAfter(dayjs(pointB.dateFrom))) {
@@ -60,10 +63,10 @@ const sortByDay = (pointA, pointB) => {
 };
 
 const sortByTime = (pointA, pointB) =>
-  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom)) -
-  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom)) -
+  dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
 
-const sortByPrice = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
+const sortByPrice = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 
 const getMappedObjectsByIds = (listItems, ids, key = 'id') =>
   ids.map((id) => listItems.find((item) => item[key] === id));
