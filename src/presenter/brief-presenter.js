@@ -174,11 +174,7 @@ export default class BriefPresenter {
     const sortedEvents = sort[SortType.DAY]([...this.#eventModel.events]);
 
     return sortedEvents.length > 0
-      ? `${dayjs(sortedEvents.at(0).dateFrom).format(
-          DATE_TIME_DURATION
-        )}&nbsp;&mdash;&nbsp${dayjs(
-          sortedEvents.at(sortedEvents.length - 1).dateTo
-        ).format(DATE_TIME_DURATION)}`
+      ? `${dayjs(sortedEvents.at(0).dateFrom).format(DATE_TIME_DURATION)}&nbsp;&mdash;&nbsp${dayjs(sortedEvents.at(sortedEvents.length - 1).dateTo).format(DATE_TIME_DURATION)}`
       : '';
   };
 
