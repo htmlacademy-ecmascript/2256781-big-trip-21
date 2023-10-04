@@ -88,7 +88,7 @@ const getFormTemplate = ({
             <span class="visually-hidden">Price</span>
             €
           </label>
-          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${encode(String(basePrice))}" ${isDisabled ? 'disabled' : ''} required>
+          <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${encode(String(basePrice))}" ${isDisabled ? 'disabled' : ''} required min="0">
         </div>
 
         <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${labelSave}</button>

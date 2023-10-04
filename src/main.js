@@ -53,5 +53,5 @@ const main = async () => {
   eventModel.init();
 };
 
-//!
+//! маркер: подготовка к защите #2
 main();

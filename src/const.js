@@ -121,7 +121,7 @@ const SortType = {
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
-  OFFER: 'offer',
+  OFFER: 'offers',
 };
 
 /** @enum {string} Перечисление описывающее доступность вариантов сортировки */
