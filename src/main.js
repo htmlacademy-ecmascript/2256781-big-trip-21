@@ -26,8 +26,6 @@ const main = async () => {
     offerModel,
   });
 
-  // await eventModel.init();
-
   const filterModel = new FilterModel();
   const addingModel = new AddingModel();
 
@@ -55,4 +53,5 @@ const main = async () => {
   eventModel.init();
 };
 
+//! маркер: подготовка к защите #2
 main();

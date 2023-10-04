@@ -1,10 +1,8 @@
 import { formatDate, getFormattedDateDifference } from '../utils/event.js';
 import {
-  DAY_FORMAT,
-  MONTH_FORMAT,
-  DATE_TIME_FORMAT,
   TIME_FORMAT,
   DATE_TIME_FORMAT_WITH_TIME,
+  DATE_MONTH_DAY,
 } from '../const.js';
 import { encode } from 'he';
 
@@ -23,7 +21,7 @@ const getEventTemplate = ({ event, destination, checkedOffers = [] }) => {
   return `
   <li class="trip-events__item">
     <div class="event">
-      <time class="event__date" datetime="${formatDate(dateFrom, DATE_TIME_FORMAT)}">${formatDate(dateFrom, MONTH_FORMAT)}${formatDate(dateFrom, DAY_FORMAT)}</time>
+      <time class="event__date" datetime="${encode(dateFrom)}">${formatDate(dateFrom, DATE_MONTH_DAY)}</time>
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${encode(type)}.png" alt="Event type icon">
       </div>

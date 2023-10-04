@@ -6,7 +6,7 @@ import {
   RenderPosition,
 } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
-import { TimeLimit, enableSortType } from '../const.js';
+import { InformationMessage, TimeLimit, enableSortType } from '../const.js';
 import MessageView from '../view/message-view.js';
 import { SortType, TypeOfChange, UserAction } from '../const.js';
 import { sort } from '../utils/sort.js';
@@ -181,11 +181,8 @@ export default class RoutePresenter {
     this.#createMessageComponent(message);
   }
 
-  #renderError({ isError, message }) {
-    if (!isError) {
-      return;
-    }
-
+  #renderError() {
+    const message = InformationMessage.INITIALIZE_FAILURE;
     this.#createMessageComponent(message);
   }
 
@@ -252,21 +249,15 @@ export default class RoutePresenter {
   };
 
   #modeChangeHandler = () => {
-    // const quantityEvents = this.#filterModel.getQuantityByCurrentType([
-    //   ...this.#eventModel.events,
-    // ]);
+    if (this.#creatingPresenter !== null) {
+      this.#creatingPresenter.destroy();
+    }
 
-    // this.#creatingPresenter.destroy();
+    if (this.events.length === 0) {
+      this.#renderNoEvents();
+    }
+
     this.#eventPresenters.forEach((presenter) => presenter.resetView());
-
-    // if (quantityEvents === 0 && !this.#addingModel.isPressed) {
-    //   this.#renderNoEvents();
-    // }
-
-    // this.#addingModel.update(
-    //   TypeOfChange.CREATING,
-    //   !this.#addingModel.isPressed
-    // );
   };
 
   /**
@@ -309,7 +300,7 @@ export default class RoutePresenter {
       case TypeOfChange.FAILURE:
         this.#isLoading = false;
         remove(this.#messageComponent);
-        this.#renderError(payload);
+        this.#renderError();
         break;
     }
   };
